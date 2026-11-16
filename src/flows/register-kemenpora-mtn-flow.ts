@@ -3,12 +3,16 @@ import { performLogin } from '../pages/auth.page.js';
 import { safeNavigate, assertNoValidationErrors, safeDismissUnexpectedPopups } from '../utils/page-error-guard.js';
 import { StepLogger } from '../utils/step-logger.js';
 import { resolveInstansiContext, selectStrictInstansi } from '../utils/instansi-helper.js';
-import { kemenpora14Entities, kemenpora99KamusElements } from '../generators/kemenpora-mtn-data.js';
+import { getKemenporaDatasetPayload } from '../generators/fallback-fake-data.js';
 
-export async function runRegisterKemenporaRelationalFlow() {
+export async function runRegisterKemenporaRelationalFlow(datasetId: string = 'DS-PORA-001') {
+  const datasetData = getKemenporaDatasetPayload(datasetId);
+  const kemenporaEntities = datasetData.step2Entitas;
+  const kemenporaKamusElements = datasetData.step3KamusData;
+
   const browser = await chromium.launch({ headless: true, slowMo: 50 });
   const BASE_URL = process.env.BASE_URL || 'https://fe-staging.data.go.id';
-  const logger = new StepLogger(['INIT', 'A', 'B', 'C'], 'RegKemenporaRelasi');
+  const logger = new StepLogger(['AUTH', 'A', 'B', 'C'], 'RegKemenporaRelasi');
   const instansiCtx = resolveInstansiContext('exchange@test.kemendagri.go.id');
   const pengusulEmail = instansiCtx.loginEmail;
   const pengusulPassword = process.env.USER_PENGUSUL_PASSWORD || '123456789';
@@ -16,12 +20,13 @@ export async function runRegisterKemenporaRelationalFlow() {
   const targetPassword = instansiCtx.targetLoginPassword;
 
   console.log('╔════════════════════════════════════════════════════════════════════════════════════════╗');
-  console.log('║     REGISTRASI DATASET KEMENPORA MTN SKEMA RELASIONAL: 14 ENTITAS & 106 KAMUS DATA     ║');
+  console.log('║     REGISTRASI DATASET KEMENPORA MTN SKEMA RELASIONAL: DARI DATA JSON RESMI MTN        ║');
   console.log('╚════════════════════════════════════════════════════════════════════════════════════════╝');
+  console.log(`Dataset  : ${datasetId} - ${datasetData.step1Informasi.nama}`);
   console.log(`Pengusul : ${instansiCtx.loginInstansiName} (${pengusulEmail})`);
   console.log(`Target   : ${instansiCtx.targetInstansi} (${targetEmail})`);
-  console.log(`Entitas  : ${kemenpora14Entities.length} Entitas Terelasi`);
-  console.log(`Kamus    : ${kemenpora99KamusElements.length} Elemen Kamus Data Lengkap\n`);
+  console.log(`Entitas  : ${kemenporaEntities.length} Entitas Terelasi`);
+  console.log(`Kamus    : ${kemenporaKamusElements.length} Elemen Kamus Data Lengkap\n`);
 
   try {
     const timestamp = Date.now();
@@ -216,13 +221,13 @@ export async function runRegisterKemenporaRelationalFlow() {
     console.log('   ✅ Step 1 berhasil disimpan.');
 
     // ==========================================================================
-    // STEP 2: MULTI-ENTITAS DATA (14 ENTITAS TERELASI)
+    // STEP 2: MULTI-ENTITAS DATA (LOOP DINAMIS DARI DATA JSON)
     // ==========================================================================
-    console.log(`   ▶ [Step 2] Menambahkan ${kemenpora14Entities.length} Entitas Data Terelasi...`);
+    console.log(`   ▶ [Step 2] Menambahkan ${kemenporaEntities.length} Entitas Data Terelasi...`);
 
-    for (let i = 0; i < kemenpora14Entities.length; i++) {
-      const ent = kemenpora14Entities[i];
-      console.log(`      [${i + 1}/${kemenpora14Entities.length}] Menambahkan entitas "${ent.namaEntitas}"...`);
+    for (let i = 0; i < kemenporaEntities.length; i++) {
+      const ent = kemenporaEntities[i];
+      console.log(`      [${i + 1}/${kemenporaEntities.length}] Menambahkan entitas "${ent.namaEntitas}"...`);
 
       const addEntitasBtn = kemenporaPage.locator(
         '#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")'
@@ -243,7 +248,7 @@ export async function runRegisterKemenporaRelationalFlow() {
       await kemenporaPage.waitForTimeout(1000);
     }
 
-    console.log(`   ✅ Seluruh ${kemenpora14Entities.length} entitas berhasil didaftarkan di Langkah 2.`);
+    console.log(`   ✅ Seluruh ${kemenporaEntities.length} entitas berhasil didaftarkan di Langkah 2.`);
     await assertNoValidationErrors(kemenporaPage, 'Registrasi Dataset Step 2');
 
     const nextBtn2 = kemenporaPage.locator('#button-dataset-next-step').first();
@@ -253,14 +258,14 @@ export async function runRegisterKemenporaRelationalFlow() {
     console.log('   ✅ Step 2 berhasil disimpan.');
 
     // ==========================================================================
-    // STEP 3: MULTI-KAMUS DATA (106 ELEMEN LENGKAP B4. RegKamusData.csv)
+    // STEP 3: MULTI-KAMUS DATA (LOOP DINAMIS DARI DATA JSON)
     // ==========================================================================
-    console.log(`   ▶ [Step 3] Menambahkan ${kemenpora99KamusElements.length} Elemen Kamus Data Terelasi 1 per 1...`);
+    console.log(`   ▶ [Step 3] Menambahkan ${kemenporaKamusElements.length} Elemen Kamus Data Terelasi 1 per 1...`);
 
-    for (let i = 0; i < kemenpora99KamusElements.length; i++) {
-      const elem = kemenpora99KamusElements[i];
-      if ((i + 1) % 10 === 0 || i === 0 || i === kemenpora99KamusElements.length - 1) {
-        console.log(`      [${i + 1}/${kemenpora99KamusElements.length}] Memproses elemen "${elem.namaElemen}" [${elem.namaEntitas}] (${elem.tipeData})...`);
+    for (let i = 0; i < kemenporaKamusElements.length; i++) {
+      const elem = kemenporaKamusElements[i];
+      if ((i + 1) % 10 === 0 || i === 0 || i === kemenporaKamusElements.length - 1) {
+        console.log(`      [${i + 1}/${kemenporaKamusElements.length}] Memproses elemen "${elem.namaElemen}" [${elem.namaEntitas}] (${elem.tipeData})...`);
       }
 
       const addElemBtn = kemenporaPage.locator(
@@ -312,7 +317,7 @@ export async function runRegisterKemenporaRelationalFlow() {
       await kemenporaPage.waitForTimeout(600);
     }
 
-    console.log(`   ✅ Seluruh ${kemenpora99KamusElements.length} elemen kamus data berhasil ditambahkan ke daftar.`);
+    console.log(`   ✅ Seluruh ${kemenporaKamusElements.length} elemen kamus data berhasil ditambahkan ke daftar.`);
     await assertNoValidationErrors(kemenporaPage, 'Registrasi Dataset Step 3 (Daftar Kamus Data)');
 
     // Pilih Primary Key pada baris id_olahragawan
@@ -445,7 +450,8 @@ export async function runRegisterKemenporaRelationalFlow() {
 }
 
 if (process.argv[1]?.includes('register-kemenpora-mtn-flow')) {
-  runRegisterKemenporaRelationalFlow().catch((err) => {
+  const targetDsId = process.argv[2] || 'DS-PORA-001';
+  runRegisterKemenporaRelationalFlow(targetDsId).catch((err) => {
     console.error('Fatal error:', err);
     process.exit(1);
   });

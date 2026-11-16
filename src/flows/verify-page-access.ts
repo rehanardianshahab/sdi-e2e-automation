@@ -453,28 +453,35 @@ export async function runPageByPageVerification(options: VerificationOptions = {
         }
 
         // ----------------------------------------------------------------------
-        // STEP 2: ENTITAS / STRUKTUR DATA (Isi semua field & verifikasi validasi)
+        // STEP 2: ENTITAS / STRUKTUR DATA (Loop dinamis seluruh entitas dari JSON)
         // ----------------------------------------------------------------------
-        const addEntitasBtn = waliPage.locator('#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")').first();
-        if (await addEntitasBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await addEntitasBtn.click({ force: true });
-          const dialog = waliPage.locator('[role="dialog"]').first();
-          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
-            const entName = dialog.locator('input').first();
-            if (await entName.isVisible()) {
-              await entName.fill(payload.registrasiDataset.step2Entitas[0].namaEntitas || 'Data Penerima Bantuan');
-            }
-            const entDesc = dialog.locator('textarea').first();
-            if (await entDesc.isVisible()) {
-              await entDesc.fill(payload.registrasiDataset.step2Entitas[0].definisi || 'Entitas catatan data individu penerima manfaat perlindungan sosial.');
-            }
+        const entitasList = payload.registrasiDataset.step2Entitas && payload.registrasiDataset.step2Entitas.length > 0
+          ? payload.registrasiDataset.step2Entitas
+          : [{ namaEntitas: 'olahragawan', definisi: 'Tabel untuk menyimpan data olahragawan' }];
 
-            // Verifikasi tidak ada error validasi pada modal entitas
-            await assertNoValidationErrors(waliPage, 'Modal Tambah Entitas Step 2');
+        for (let i = 0; i < entitasList.length; i++) {
+          const ent = entitasList[i];
+          const addEntitasBtn = waliPage.locator('#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")').first();
+          if (await addEntitasBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await addEntitasBtn.click({ force: true });
+            const dialog = waliPage.locator('[role="dialog"]').first();
+            if (await dialog.isVisible({ timeout: 3000 }).catch(() => false)) {
+              const entName = dialog.locator('#input-dataset-step2-nama-entitas, input').first();
+              if (await entName.isVisible()) {
+                await entName.fill(ent.namaEntitas);
+              }
+              const entDesc = dialog.locator('#input-dataset-step2-definisi-entitas, textarea').first();
+              if (await entDesc.isVisible()) {
+                await entDesc.fill((ent.definisi || '').slice(0, 255));
+              }
 
-            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
-            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
-            await waliPage.waitForTimeout(1000);
+              // Verifikasi tidak ada error validasi pada modal entitas
+              await assertNoValidationErrors(waliPage, `Modal Tambah Entitas Step 2 [${ent.namaEntitas}]`);
+
+              const saveBtn = dialog.locator('#button-dataset-step2-modal-simpan, button:has-text("Tambah"), button:has-text("Simpan")').first();
+              if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
+              await waliPage.waitForTimeout(600);
+            }
           }
         }
 
@@ -488,32 +495,80 @@ export async function runPageByPageVerification(options: VerificationOptions = {
         }
 
         // ----------------------------------------------------------------------
-        // STEP 3: KAMUS DATA / ELEMEN (Isi semua field & verifikasi validasi)
+        // STEP 3: KAMUS DATA / ELEMEN (Loop dinamis seluruh kamus data dari JSON)
         // ----------------------------------------------------------------------
-        const addElemBtn = waliPage.locator('#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")').first();
-        if (await addElemBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await addElemBtn.click({ force: true });
-          const dialog = waliPage.locator('[role="dialog"]').first();
-          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
-            // Isi semua input di modal kamus data
-            const inputs = dialog.locator('input');
-            const inCount = await inputs.count();
-            if (inCount >= 1) await inputs.nth(0).fill('Nomor Induk Kependudukan');
-            if (inCount >= 2) await inputs.nth(1).fill('nik');
-            if (inCount >= 3) await inputs.nth(2).fill('-');
-            if (inCount >= 4) await inputs.nth(3).fill('16 karakter numerik');
+        const kamusList = payload.registrasiDataset.step3KamusData && payload.registrasiDataset.step3KamusData.length > 0
+          ? payload.registrasiDataset.step3KamusData
+          : [{ namaElemen: 'id_olahragawan', namaEntitas: entitasList[0].namaEntitas, alias: 'id_olahragawan', definisi: 'ID unik data talenta', tipeData: 'varchar', formatPanjang: '50', satuan: '-', sifatKewajiban: 'Optional', isPrimaryKey: true, idStandar: '-', aturanValidasi: 'Opsional' }];
 
-            const elDesc = dialog.locator('textarea').first();
-            if (await elDesc.isVisible()) {
-              await elDesc.fill('Nomor identitas kependudukan tunggal terverifikasi dan tervalidasi.');
+        for (let i = 0; i < kamusList.length; i++) {
+          const elem = kamusList[i];
+          const addElemBtn = waliPage.locator('#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")').first();
+          if (await addElemBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await addElemBtn.click({ force: true });
+            const dialog = waliPage.locator('[role="dialog"]').first();
+            if (await dialog.isVisible({ timeout: 3000 }).catch(() => false)) {
+              // Pilih Entitas pemilik elemen jika dropdown modal entitas tersedia
+              const entitasTrigger = dialog.locator('#select-dataset-step3-modal-entitas');
+              if (await entitasTrigger.isVisible()) {
+                const currentEnt = (await entitasTrigger.innerText().catch(() => '')).trim();
+                if (currentEnt !== elem.namaEntitas) {
+                  await entitasTrigger.click();
+                  await waliPage.waitForTimeout(250);
+                  const entOpt = waliPage.locator(`[role="option"]:has-text("${elem.namaEntitas}")`).first();
+                  if (await entOpt.isVisible({ timeout: 2000 }).catch(() => false)) {
+                    await entOpt.click();
+                    await waliPage.waitForTimeout(200);
+                  }
+                }
+              }
+
+              // Isi input fields di modal kamus data
+              const inputNama = dialog.locator('#input-dataset-step3-modal-nama-elemen, input').first();
+              if (await inputNama.isVisible()) await inputNama.fill(elem.namaElemen);
+
+              const inputAlias = dialog.locator('#input-dataset-step3-modal-alias');
+              if (await inputAlias.isVisible()) await inputAlias.fill(elem.alias || elem.namaElemen);
+
+              const inputDef = dialog.locator('#textarea-dataset-step3-modal-definisi, textarea').first();
+              if (await inputDef.isVisible()) await inputDef.fill((elem.definisi || '').slice(0, 255));
+
+              const inputSatuan = dialog.locator('#input-dataset-step3-modal-satuan');
+              if (await inputSatuan.isVisible()) await inputSatuan.fill(elem.satuan || '-');
+
+              const inputFormat = dialog.locator('#input-dataset-step3-modal-format-panjang');
+              if (await inputFormat.isVisible()) await inputFormat.fill(elem.formatPanjang || 'VARCHAR(255)');
+
+              // Sifat Kewajiban
+              if (elem.sifatKewajiban === 'Optional') {
+                const kewajibanTrigger = dialog.locator('#select-dataset-step3-modal-sifat-kewajiban');
+                if (await kewajibanTrigger.isVisible()) {
+                  await kewajibanTrigger.click();
+                  await waliPage.waitForTimeout(200);
+                  const opt = waliPage.locator('[role="option"]:has-text("Optional")').first();
+                  if (await opt.isVisible()) await opt.click();
+                }
+              }
+
+              // Verifikasi tidak ada error validasi pada modal kamus data
+              await assertNoValidationErrors(waliPage, `Modal Tambah Elemen Kamus Data Step 3 [${elem.namaElemen}]`);
+
+              const saveBtn = dialog.locator('#button-dataset-step3-modal-simpan, button:has-text("Tambah Kamus Data"), button:has-text("Tambah"), button:has-text("Simpan")').first();
+              if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
+              await waliPage.waitForTimeout(500);
             }
+          }
+        }
 
-            // Verifikasi tidak ada error validasi pada modal kamus data
-            await assertNoValidationErrors(waliPage, 'Modal Tambah Elemen Kamus Data Step 3');
-
-            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
-            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
-            await waliPage.waitForTimeout(1000);
+        // Set Primary Key untuk elemen dengan isPrimaryKey = true
+        for (const elem of kamusList) {
+          if (elem.isPrimaryKey) {
+            const pkRadio = waliPage.locator(`tbody tr:has-text("${elem.alias || elem.namaElemen}") button:has-text("Pilih PK"), tbody tr:has-text("${elem.alias || elem.namaElemen}") input[type="radio"]`).first();
+            if (await pkRadio.isVisible({ timeout: 2000 }).catch(() => false)) {
+              await pkRadio.click({ force: true });
+              await waliPage.waitForTimeout(300);
+            }
+            break;
           }
         }
 

@@ -1,4 +1,87 @@
-import { SdiAutomationPayload } from '../schemas/sdi-e2e.schema.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { SdiAutomationPayload, RegistrasiDatasetPayload } from '../schemas/sdi-e2e.schema.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const jsonPath = path.resolve(__dirname, '../data/kemenpora-mtn-datasets.json');
+
+let loadedDatasets: Record<string, any> = {};
+try {
+  if (fs.existsSync(jsonPath)) {
+    const raw = fs.readFileSync(jsonPath, 'utf-8');
+    loadedDatasets = JSON.parse(raw);
+  }
+} catch (err) {
+  console.warn('[WARN] Gagal membaca kemenpora-mtn-datasets.json:', err);
+}
+
+/**
+ * Mengambil payload registrasi dataset dari file kemenpora-mtn-datasets.json
+ * @param datasetId ID Dataset MTN (contoh: 'DS-PORA-001', 'DS-PORA-002', dst). Default: 'DS-PORA-001'
+ */
+export function getKemenporaDatasetPayload(datasetId: string = 'DS-PORA-001'): RegistrasiDatasetPayload {
+  const ds = loadedDatasets[datasetId] || loadedDatasets['DS-PORA-001'];
+  if (ds && ds.step1Informasi && ds.step2Entitas && ds.step3KamusData) {
+    return {
+      step1Informasi: { ...ds.step1Informasi },
+      step2Entitas: [...ds.step2Entitas],
+      step3KamusData: [...ds.step3KamusData]
+    };
+  }
+  // Fallback standar jika file JSON belum termuat
+  return {
+    step1Informasi: {
+      nama: "Data Terpadu Olahragawan dan Manajemen Talenta Keolahragaan Nasional (DS-PORA-001)",
+      deskripsi: "Dataset agregat dan relasional terpadu MTN Keolahragaan Kemenpora yang menyimpan data olahragawan, pelatih, pembinaan, riwayat prestasi, dan hasil pengukuran kesehatan nasional.",
+      tema: "Pendidikan dan Tenaga Kerja",
+      jenisData: "Data Induk",
+      klasifikasiRisiko: "Terbatas",
+      frekuensi: "Tahunan",
+      formatData: ["JSON"],
+      dampakKerahasiaan: "sedang",
+      dampakIntegritas: "tinggi",
+      dampakKetersediaan: "sedang",
+      lisensi: "Creative Commons Attribution",
+      versi: "Permenpora Nomor 5 Tahun 2023",
+      standar: "Standar Data Statistik Nasional",
+      kodeReferensi: "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      tujuanPemanfaatan: "Pemadanan data dan sinkronisasi pembinaan atlet serta tenaga keolahragaan nasional.",
+      kontak: "pusdatin@kemenpora.go.id / (021) 5738151"
+    },
+    step2Entitas: [
+      {
+        namaEntitas: "olahragawan",
+        definisi: "Tabel untuk menyimpan data olahragawan"
+      }
+    ],
+    step3KamusData: [
+      {
+        namaElemen: "id_olahragawan",
+        namaEntitas: "olahragawan",
+        alias: "id_olahragawan",
+        definisi: "ID unik data talenta",
+        tipeData: "varchar",
+        formatPanjang: "50",
+        satuan: "-",
+        sifatKewajiban: "Optional",
+        isPrimaryKey: true,
+        idStandar: "-",
+        aturanValidasi: "Opsional"
+      }
+    ]
+  };
+}
+
+/**
+ * Mengembalikan daftar seluruh dataset yang tersedia di kemenpora-mtn-datasets.json
+ */
+export function getAllKemenporaDatasets(): Record<string, any> {
+  return loadedDatasets;
+}
+
+const defaultKemenporaRegistrasi = getKemenporaDatasetPayload('DS-PORA-001');
 
 /**
  * Fallback fake data untuk Portal SDI.
@@ -13,77 +96,7 @@ export const FALLBACK_FAKE_DATA: SdiAutomationPayload = {
     tujuanPengusulan: "Sinkronisasi data kepemudaan, wirausaha muda, dan pembinaan atlet berprestasi daerah dengan profil kependudukan wilayah Kemendagri.",
     catatanReviewSekretariat: "Usulan kebutuhan data kepemudaan dan keolahragaan daerah telah sesuai dengan prioritas Satu Data Indonesia dan disetujui untuk disediakan oleh Kemenpora."
   },
-  registrasiDataset: {
-    step1Informasi: {
-      nama: "Data Terpadu Kepemudaan, Prestasi Olahraga, dan Indeks Pembangunan Pemuda Kemenpora",
-      deskripsi: "Dataset agregat indikator kepemudaan, wirausaha muda, pembinaan atlet daerah, serta sebaran prasarana olahraga nasional untuk mendukung sinkronisasi pembangunan daerah.",
-      tema: "Pembangunan Daerah",
-      jenisData: "Data Induk",
-      klasifikasiRisiko: "Terbatas",
-      frekuensi: "Bulanan",
-      formatData: ["JSON", "REST API", "CSV"],
-      dampakKerahasiaan: "sedang",
-      dampakIntegritas: "tinggi",
-      dampakKetersediaan: "sedang",
-      lisensi: "Creative Commons Attribution",
-      versi: "Permenpora Nomor 5 Tahun 2023",
-      standar: "Standar Data Statistik Nasional",
-      kodeReferensi: "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
-      tujuanPemanfaatan: "Sinkronisasi data kepemudaan dan pembangunan keolahragaan daerah antara Kemenpora dan Kemendagri.",
-      kontak: "pusdatin@kemenpora.go.id / (021) 5738151"
-    },
-    step2Entitas: [
-      {
-        namaEntitas: "entitas_profil_kepemudaan_daerah",
-        definisi: "Entitas data agregat kepemudaan, organisasi kepemudaan, dan wirausaha muda berdasarkan kode wilayah provinsi serta kabupaten/kota."
-      },
-      {
-        namaEntitas: "entitas_prestasi_dan_sarana_olahraga",
-        definisi: "Entitas catatan pembinaan atlet daerah berprestasi serta sebaran prasarana olahraga tingkat kabupaten/kota dan provinsi."
-      }
-    ],
-    step3KamusData: [
-      {
-        namaElemen: "Nomor Induk Kependudukan Pemuda dan Atlet",
-        namaEntitas: "entitas_profil_kepemudaan_daerah",
-        alias: "nik_pemuda_atlet",
-        definisi: "Nomor identitas tunggal kependudukan bagi pemuda binaan, wirausaha muda, dan atlet berprestasi daerah.",
-        tipeData: "String (Code)",
-        formatPanjang: "CHAR(16)",
-        satuan: "-",
-        sifatKewajiban: "Mandatory",
-        isPrimaryKey: true,
-        idStandar: "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
-        aturanValidasi: "Wajib unik, tidak boleh NULL, 16 karakter numerik tervalidasi Dukcapil."
-      },
-      {
-        namaElemen: "Kode Wilayah Administrasi Daerah",
-        namaEntitas: "entitas_profil_kepemudaan_daerah",
-        alias: "kode_wilayah",
-        definisi: "Kode unik wilayah administrasi pemerintahan provinsi dan kabupaten/kota tempat domisili pemuda dan sarana olahraga.",
-        tipeData: "String (Code)",
-        formatPanjang: "CHAR(10)",
-        satuan: "-",
-        sifatKewajiban: "Mandatory",
-        isPrimaryKey: false,
-        idStandar: "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
-        aturanValidasi: "Format kode wilayah Kemendagri yang sah."
-      },
-      {
-        namaElemen: "Indeks Pembangunan Pemuda dan Kategori Cabang Olahraga",
-        namaEntitas: "entitas_prestasi_dan_sarana_olahraga",
-        alias: "kategori_pemuda_olahraga",
-        definisi: "Klasifikasi bidang pengembangan kepemudaan, kewirausahaan pemuda, dan cabang olahraga prestasi daerah.",
-        tipeData: "String",
-        formatPanjang: "VARCHAR(100)",
-        satuan: "Skor/Kategori",
-        sifatKewajiban: "Mandatory",
-        isPrimaryKey: false,
-        idStandar: "Standar Data Statistik Nasional (SDSN)",
-        aturanValidasi: "Tidak boleh kosong, memuat kategori resmi Kemenpora."
-      }
-    ]
-  },
+  registrasiDataset: defaultKemenporaRegistrasi,
   registrasiLayananLID: {
     apiTitle: "Layanan Interoperabilitas Data Kepemudaan dan Keolahragaan Kemenpora",
     apiName: "api-kepemudaan-olahraga-kemenpora-v1",

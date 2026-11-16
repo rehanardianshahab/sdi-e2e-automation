@@ -1,0 +1,4897 @@
+{
+  "DS-PORA-001": {
+    "idDataset": "DS-PORA-001",
+    "step1Informasi": {
+      "nama": "Data Terpadu Olahragawan dan Manajemen Talenta Keolahragaan Nasional (DS-PORA-001 Klaster Relasi)",
+      "deskripsi": "Dataset agregat dan relasional terpadu MTN Keolahragaan Kemenpora yang menyimpan data olahragawan, pelatih, pembinaan, riwayat prestasi, dan hasil pengukuran kesehatan nasional.",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pemadanan data dan sinkronisasi pembinaan atlet serta tenaga keolahragaan nasional.",
+      "kontak": "pusdatin@kemenpora.go.id / (021) 5738151"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "olahragawan",
+        "definisi": "Tabel untuk menyimpan data olahragawan"
+      },
+      {
+        "namaEntitas": "pelatnas_atlet",
+        "definisi": "Tabel untuk menyimpan data atlet Pemusatan Latihan Nasional"
+      },
+      {
+        "namaEntitas": "atlet_cabor",
+        "definisi": "Tabel untuk menyimpan data atlet cabang olahraga"
+      },
+      {
+        "namaEntitas": "atlet_disabilitas",
+        "definisi": "Master Data atlet disabilitas"
+      },
+      {
+        "namaEntitas": "detil_pembinaan",
+        "definisi": "Tabel untuk menyimpan data histori pembinaan olahragawan"
+      },
+      {
+        "namaEntitas": "atlet_pelatih",
+        "definisi": "Tabel untuk menyimpan data relasi pembinaan antara atlet dan pelatih"
+      },
+      {
+        "namaEntitas": "atlet_pendidikan",
+        "definisi": "Tabel untuk menyimpan data riwayat pendidikan atlet"
+      },
+      {
+        "namaEntitas": "histori_prestasi",
+        "definisi": "Tabel untuk menyimpan data histori prestasi olahragawan"
+      },
+      {
+        "namaEntitas": "pengukuran_skill",
+        "definisi": "Tabel untuk menyimpan data pengukuran skill"
+      },
+      {
+        "namaEntitas": "pengukuran_biomotorik",
+        "definisi": "Tabel untuk menyimpan data pengukuran biomotorik"
+      },
+      {
+        "namaEntitas": "pengukuran_antro",
+        "definisi": "Tabel untuk menyimpan data pengukuran antropometri"
+      },
+      {
+        "namaEntitas": "pengukuran_kebugaran",
+        "definisi": "Tabel untuk menyimpan data pengukuran kebugaran"
+      },
+      {
+        "namaEntitas": "pengukuran_psikologi",
+        "definisi": "Tabel untuk menyimpan data pengukuran psikologi"
+      },
+      {
+        "namaEntitas": "pengukuran_kesehatan",
+        "definisi": "Tabel untuk menyimpan data pengukuran kesehatan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "olahragawan",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik data talenta",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nik",
+        "namaEntitas": "olahragawan",
+        "alias": "nik",
+        "definisi": "Nomor Induk Kependudukan",
+        "tipeData": "varchar",
+        "formatPanjang": "21",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "nisn",
+        "namaEntitas": "olahragawan",
+        "alias": "nisn",
+        "definisi": "Nomor Induk SIswa Nasional",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_asal",
+        "namaEntitas": "olahragawan",
+        "alias": "id_asal",
+        "definisi": "Asal Daerah Olahragawan",
+        "tipeData": "int",
+        "formatPanjang": "20",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama_lengkap",
+        "namaEntitas": "olahragawan",
+        "alias": "nama_lengkap",
+        "definisi": "Nama lengkap Olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama_depan",
+        "namaEntitas": "olahragawan",
+        "alias": "nama_depan",
+        "definisi": "Nama Depan Olahrgawan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "nama_belakang",
+        "namaEntitas": "olahragawan",
+        "alias": "nama_belakang",
+        "definisi": "Nama belakang Olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "jenis_kelamin",
+        "namaEntitas": "olahragawan",
+        "alias": "jenis_kelamin",
+        "definisi": "Jenis kelamin olahrgaawan",
+        "tipeData": "varchar",
+        "formatPanjang": "4",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "provinsi",
+        "namaEntitas": "olahragawan",
+        "alias": "provinsi",
+        "definisi": "Asal Daerah Olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "alamat",
+        "namaEntitas": "olahragawan",
+        "alias": "alamat",
+        "definisi": "alamat berdasarkan KTP",
+        "tipeData": "text",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "alamat_domisili",
+        "namaEntitas": "olahragawan",
+        "alias": "alamat_domisili",
+        "definisi": "alamat domisili olahragawan",
+        "tipeData": "text",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tempat_lahir",
+        "namaEntitas": "olahragawan",
+        "alias": "tempat_lahir",
+        "definisi": "tempat lahir olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_lahir",
+        "namaEntitas": "olahragawan",
+        "alias": "tanggal_lahir",
+        "definisi": "tanggal lahir olahrgawan",
+        "tipeData": "date",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "status_disabilitas",
+        "namaEntitas": "olahragawan",
+        "alias": "status_disabilitas",
+        "definisi": "status apakah olahragawan tersebut penyandang disabilitas",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "foto",
+        "namaEntitas": "olahragawan",
+        "alias": "foto",
+        "definisi": "url foto",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "status",
+        "namaEntitas": "olahragawan",
+        "alias": "status",
+        "definisi": "status keaktifan olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "4",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "id_atlet_cabor",
+        "namaEntitas": "atlet_cabor",
+        "alias": "id_atlet_cabor",
+        "definisi": "ID unik atlet cabang olahraga",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_cabor",
+        "namaEntitas": "atlet_cabor",
+        "alias": "id_cabor",
+        "definisi": "ID unik cabang olahraga",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "atlet_cabor",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "nomor",
+        "namaEntitas": "atlet_cabor",
+        "alias": "nomor",
+        "definisi": "Nomor cabang olahraga",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "id",
+        "definisi": "ID unik relasi",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_tenor",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "id_tenor",
+        "definisi": "ID unik tenaga olahraga",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "peran",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "peran",
+        "definisi": "Peran pelatih",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_mulai",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "tanggal_mulai",
+        "definisi": "Tanggal mulai kontrak",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_selesai",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "tanggal_selesai",
+        "definisi": "Tanggal selesai kontrak",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "id_atlet_pendidikan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "id_atlet_pendidikan",
+        "definisi": "ID unik pendidikan atlet",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_pendidikan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "id_pendidikan",
+        "definisi": "ID unik pendidikan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "jenjang_pendidikan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "jenjang_pendidikan",
+        "definisi": "Jenjang pendidikan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama_pendidikan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "nama_pendidikan",
+        "definisi": "Nama pendidikan",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "prodi",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "prodi",
+        "definisi": "Nama program studi",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "provinsi",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "provinsi",
+        "definisi": "Nama provinsi",
+        "tipeData": "varchar",
+        "formatPanjang": "200",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "negara",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "negara",
+        "definisi": "Nama negara",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_pembinaan",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "id_pembinaan",
+        "definisi": "ID unik pendataan pembinaan",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_wadah",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "id_wadah",
+        "definisi": "ID unik wadah pembinaan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "tgl_mulai",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "tgl_mulai",
+        "definisi": "Periode mulai pembinaan",
+        "tipeData": "date",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tgl_selesai",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "tgl_selesai",
+        "definisi": "Periode Akhir pembinaan",
+        "tipeData": "date",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "status",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "status",
+        "definisi": "Status pembinaan olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "id_histori_prestasi",
+        "namaEntitas": "histori_prestasi",
+        "alias": "id_histori_prestasi",
+        "definisi": "ID unik histori prestasi",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "histori_prestasi",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "jenis_event",
+        "namaEntitas": "histori_prestasi",
+        "alias": "jenis_event",
+        "definisi": "Nama Event",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "level_event",
+        "namaEntitas": "histori_prestasi",
+        "alias": "level_event",
+        "definisi": "Level Event",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "kategori_event",
+        "namaEntitas": "histori_prestasi",
+        "alias": "kategori_event",
+        "definisi": "Kategori Event",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "nama_event",
+        "namaEntitas": "histori_prestasi",
+        "alias": "nama_event",
+        "definisi": "Nama Event",
+        "tipeData": "Varchar",
+        "formatPanjang": "200",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "prestasi",
+        "namaEntitas": "histori_prestasi",
+        "alias": "prestasi",
+        "definisi": "Nama Prestasi",
+        "tipeData": "Varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "nomor",
+        "namaEntitas": "histori_prestasi",
+        "alias": "nomor",
+        "definisi": "Nomor cabang olahraga",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "peringkat",
+        "namaEntitas": "histori_prestasi",
+        "alias": "peringkat",
+        "definisi": "peringkat",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "capaian_perolehan_score",
+        "namaEntitas": "histori_prestasi",
+        "alias": "capaian_perolehan_score",
+        "definisi": "Skor",
+        "tipeData": "Varchar",
+        "formatPanjang": "200",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "nama_penyelenggara",
+        "namaEntitas": "histori_prestasi",
+        "alias": "nama_penyelenggara",
+        "definisi": "Nama penyelenggara",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tempat_penyelenggaran",
+        "namaEntitas": "histori_prestasi",
+        "alias": "tempat_penyelenggaran",
+        "definisi": "Lokasi",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "histori_prestasi",
+        "alias": "tahun",
+        "definisi": "Tahun perolehan",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "id",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "id",
+        "definisi": "ID unik atlet Pemusatan Latihan Nasional",
+        "tipeData": "int",
+        "formatPanjang": "10",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "pelatnas_id",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "pelatnas_id",
+        "definisi": "ID unik Pemusatan Latihan Nasional",
+        "tipeData": "int",
+        "formatPanjang": "10",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "tahun",
+        "definisi": "Tahun",
+        "tipeData": "year",
+        "formatPanjang": "4",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "status",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "status",
+        "definisi": "Status atlet di pelatnas",
+        "tipeData": "\"enum('aktif'",
+        "formatPanjang": "'cadangan'",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "tanggal_gabung",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "tanggal_gabung",
+        "definisi": "Tahun gabung",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_keluar",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "tanggal_keluar",
+        "definisi": "Tahun keluar",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "keterangan",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "keterangan",
+        "definisi": "Keterangan",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "created_at",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "created_at",
+        "definisi": "Data dibuat",
+        "tipeData": "timestamp",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "id_pengukuran_antro",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "id_pengukuran_antro",
+        "definisi": "ID unik pengukuran antropometri",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_antro",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "id_param_antro",
+        "definisi": "ID uni parameter antropometri",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "score",
+        "definisi": "Skor antropometri",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_pengukuran_biomotorik",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "id_pengukuran_biomotorik",
+        "definisi": "ID unik pengukuran biomotorik",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_biomotorik",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "id_param_biomotorik",
+        "definisi": "ID uni parameter biomotorik",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "score",
+        "definisi": "Skor antropometri",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_pengukuran_kebugaran",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "id_pengukuran_kebugaran",
+        "definisi": "ID unik pengukuran kebugaran",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_kebugaran",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "id_param_kebugaran",
+        "definisi": "ID unik parameter kebugaran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "score",
+        "definisi": "Skor kebugaran",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_pengukuran_kesehatan",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "id_pengukuran_kesehatan",
+        "definisi": "ID unik pengukuran kesehatan",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_kesehatan",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "id_param_kesehatan",
+        "definisi": "ID unik parameter kesehatan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "score",
+        "definisi": "Skor kesehatan",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_pengukuran_psikologi",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "id_pengukuran_psikologi",
+        "definisi": "ID unik pengukuran psikologi",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_psikologi",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "id_param_psikologi",
+        "definisi": "ID unik parameter psikologi",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "score",
+        "definisi": "Skor psikologi",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_pengukuran_skill",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "id_pengukuran_skill",
+        "definisi": "ID unik pengukuran skill",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_skill",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "id_param_skill",
+        "definisi": "ID unik parameter skill",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi dan terstandarisasi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "score",
+        "definisi": "Skor skill",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_klasifikasi",
+        "namaEntitas": "atlet_disabilitas",
+        "alias": "id_klasifikasi",
+        "definisi": "ID unik klasifikasi",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "atlet_disabilitas",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-002": {
+    "idDataset": "DS-PORA-002",
+    "step1Informasi": {
+      "nama": "Data tenor - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-002)",
+      "deskripsi": "Tabel untuk menyimpan data Tenaga Keolahragaan",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data tenor Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "tenor",
+        "definisi": "Tabel untuk menyimpan data Tenaga Keolahragaan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_tenor",
+        "namaEntitas": "tenor",
+        "alias": "id_tenor",
+        "definisi": "ID unik data tenaga keolahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nik",
+        "namaEntitas": "tenor",
+        "alias": "nik",
+        "definisi": "nomor induk kependudukan",
+        "tipeData": "varchar",
+        "formatPanjang": "21",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "jenis_tenor",
+        "namaEntitas": "tenor",
+        "alias": "jenis_tenor",
+        "definisi": "Jenis tenaga keolahrgaaan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "profesi",
+        "namaEntitas": "tenor",
+        "alias": "profesi",
+        "definisi": "Profesi dari tenaga keolahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama_lengkap",
+        "namaEntitas": "tenor",
+        "alias": "nama_lengkap",
+        "definisi": "Nama lengkap Tenaga keoalahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama_depan",
+        "namaEntitas": "tenor",
+        "alias": "nama_depan",
+        "definisi": "Nama depan Tenaga keoalahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama_belakang",
+        "namaEntitas": "tenor",
+        "alias": "nama_belakang",
+        "definisi": "Nama belakang Tenaga keoalahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "alamat",
+        "namaEntitas": "tenor",
+        "alias": "alamat",
+        "definisi": "alamat berdasarkan KTP",
+        "tipeData": "text",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "alamat_domisili",
+        "namaEntitas": "tenor",
+        "alias": "alamat_domisili",
+        "definisi": "alamat domisili tenaga keolahragaan",
+        "tipeData": "text",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tempat_lahir",
+        "namaEntitas": "tenor",
+        "alias": "tempat_lahir",
+        "definisi": "tempat lahir tenaga keolahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_lahir",
+        "namaEntitas": "tenor",
+        "alias": "tanggal_lahir",
+        "definisi": "tanggal lahir tenaga keolahragaan",
+        "tipeData": "date",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "jenis_kelamin",
+        "namaEntitas": "tenor",
+        "alias": "jenis_kelamin",
+        "definisi": "jenis kelamin tenaga keolahragaan",
+        "tipeData": "\"enum('L'",
+        "formatPanjang": "'P')\"",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "kewarganegaraan",
+        "namaEntitas": "tenor",
+        "alias": "kewarganegaraan",
+        "definisi": "kewarganegaraan tenaga keolahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "kompetensi",
+        "namaEntitas": "tenor",
+        "alias": "kompetensi",
+        "definisi": "kompetensi lain yang dimiliki tenaga keolahragaan",
+        "tipeData": "text",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "asal_wilayah",
+        "namaEntitas": "tenor",
+        "alias": "asal_wilayah",
+        "definisi": "asal wilayah tenaga keolahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "foto",
+        "namaEntitas": "tenor",
+        "alias": "foto",
+        "definisi": "foto identitas diri tenaga keolahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-003": {
+    "idDataset": "DS-PORA-003",
+    "step1Informasi": {
+      "nama": "Data lembaga - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-003)",
+      "deskripsi": "Master data lembaga keolahragaan",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data lembaga Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "lembaga",
+        "definisi": "Master data lembaga keolahragaan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_lembaga",
+        "namaEntitas": "lembaga",
+        "alias": "id_lembaga",
+        "definisi": "ID unik lembaga keolahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "jenis_lembaga",
+        "namaEntitas": "lembaga",
+        "alias": "jenis_lembaga",
+        "definisi": "bentuk lembaga keolahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "nama_lembaga",
+        "namaEntitas": "lembaga",
+        "alias": "nama_lembaga",
+        "definisi": "nama dari lembaga",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "website_url",
+        "namaEntitas": "lembaga",
+        "alias": "website_url",
+        "definisi": "alamat website resmi lembaga",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-004": {
+    "idDataset": "DS-PORA-004",
+    "step1Informasi": {
+      "nama": "Data level_talenta - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-004)",
+      "deskripsi": "Master data level_talenta",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data level_talenta Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "level_talenta",
+        "definisi": "Master data level_talenta"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_talenta",
+        "namaEntitas": "level_talenta",
+        "alias": "id_talenta",
+        "definisi": "ID unik level_talenta",
+        "tipeData": "Int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "versi_level",
+        "namaEntitas": "level_talenta",
+        "alias": "versi_level",
+        "definisi": "Versi standar level pencapaian",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "nama_level",
+        "namaEntitas": "level_talenta",
+        "alias": "nama_level",
+        "definisi": "Nama tingkatan level talenta",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-005": {
+    "idDataset": "DS-PORA-005",
+    "step1Informasi": {
+      "nama": "Data pelatnas - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-005)",
+      "deskripsi": "Tabel untuk menyimpan data Pemusatan Latihan Nasional",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data pelatnas Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "pelatnas",
+        "definisi": "Tabel untuk menyimpan data Pemusatan Latihan Nasional"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id",
+        "namaEntitas": "pelatnas",
+        "alias": "id",
+        "definisi": "ID unik Pemusatan Latihan Nasional",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama",
+        "namaEntitas": "pelatnas",
+        "alias": "nama",
+        "definisi": "Nama pelatnas",
+        "tipeData": "varchar",
+        "formatPanjang": "150",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "lokasi",
+        "namaEntitas": "pelatnas",
+        "alias": "lokasi",
+        "definisi": "Lokasi pelatnas",
+        "tipeData": "varchar",
+        "formatPanjang": "150",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tahun_mulai",
+        "namaEntitas": "pelatnas",
+        "alias": "tahun_mulai",
+        "definisi": "Tahun mulai",
+        "tipeData": "year",
+        "formatPanjang": "4",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tahun_selesai",
+        "namaEntitas": "pelatnas",
+        "alias": "tahun_selesai",
+        "definisi": "Tahun selesai",
+        "tipeData": "year",
+        "formatPanjang": "4",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "keterangan",
+        "namaEntitas": "pelatnas",
+        "alias": "keterangan",
+        "definisi": "Keterangan",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "created_at",
+        "namaEntitas": "pelatnas",
+        "alias": "created_at",
+        "definisi": "Data dibuat",
+        "tipeData": "timestamp",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-006": {
+    "idDataset": "DS-PORA-006",
+    "step1Informasi": {
+      "nama": "Data reff_antro - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-006)",
+      "deskripsi": "Master data kategori pengukuran antropometri",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data reff_antro Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "reff_antro",
+        "definisi": "Master data kategori pengukuran antropometri"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_para_antro",
+        "namaEntitas": "reff_antro",
+        "alias": "id_para_antro",
+        "definisi": "ID unik test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "cat",
+        "namaEntitas": "reff_antro",
+        "alias": "cat",
+        "definisi": "kategori pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "item",
+        "namaEntitas": "reff_antro",
+        "alias": "item",
+        "definisi": "tem test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "active",
+        "namaEntitas": "reff_antro",
+        "alias": "active",
+        "definisi": "status item pengukuran",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-007": {
+    "idDataset": "DS-PORA-007",
+    "step1Informasi": {
+      "nama": "Data reff_biomotorik - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-007)",
+      "deskripsi": "Master data kategori pengukuran biomotorik",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data reff_biomotorik Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "reff_biomotorik",
+        "definisi": "Master data kategori pengukuran biomotorik"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_param_biomotorik",
+        "namaEntitas": "reff_biomotorik",
+        "alias": "id_param_biomotorik",
+        "definisi": "ID unik test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_cabor",
+        "namaEntitas": "reff_biomotorik",
+        "alias": "id_cabor",
+        "definisi": "ID unik cabang olahrag",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "item",
+        "namaEntitas": "reff_biomotorik",
+        "alias": "item",
+        "definisi": "item test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "cat",
+        "namaEntitas": "reff_biomotorik",
+        "alias": "cat",
+        "definisi": "kategori pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "active",
+        "namaEntitas": "reff_biomotorik",
+        "alias": "active",
+        "definisi": "status item pengukuran",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "satuan",
+        "namaEntitas": "reff_biomotorik",
+        "alias": "satuan",
+        "definisi": "satuan yang digunakan dalam pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-008": {
+    "idDataset": "DS-PORA-008",
+    "step1Informasi": {
+      "nama": "Data reff_kebugaran - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-008)",
+      "deskripsi": "Master data kategori pengukuran kebugaran",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data reff_kebugaran Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "reff_kebugaran",
+        "definisi": "Master data kategori pengukuran kebugaran"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_param_kebugaran",
+        "namaEntitas": "reff_kebugaran",
+        "alias": "id_param_kebugaran",
+        "definisi": "ID unik test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "item",
+        "namaEntitas": "reff_kebugaran",
+        "alias": "item",
+        "definisi": "item test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "cat",
+        "namaEntitas": "reff_kebugaran",
+        "alias": "cat",
+        "definisi": "kategori pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "active",
+        "namaEntitas": "reff_kebugaran",
+        "alias": "active",
+        "definisi": "status item pengukuran",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "satuan",
+        "namaEntitas": "reff_kebugaran",
+        "alias": "satuan",
+        "definisi": "satuan yang digunakan dalam pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-009": {
+    "idDataset": "DS-PORA-009",
+    "step1Informasi": {
+      "nama": "Data reff_kesehatan - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-009)",
+      "deskripsi": "Master data kategori pengukuran kesehatan",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data reff_kesehatan Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "reff_kesehatan",
+        "definisi": "Master data kategori pengukuran kesehatan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_param_kesehatan",
+        "namaEntitas": "reff_kesehatan",
+        "alias": "id_param_kesehatan",
+        "definisi": "ID unik test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "cat",
+        "namaEntitas": "reff_kesehatan",
+        "alias": "cat",
+        "definisi": "kategori pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "subcat",
+        "namaEntitas": "reff_kesehatan",
+        "alias": "subcat",
+        "definisi": "sub kategori pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "item",
+        "namaEntitas": "reff_kesehatan",
+        "alias": "item",
+        "definisi": "item test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "satuan",
+        "namaEntitas": "reff_kesehatan",
+        "alias": "satuan",
+        "definisi": "satuan yang digunakan dalam pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-010": {
+    "idDataset": "DS-PORA-010",
+    "step1Informasi": {
+      "nama": "Data reff_psikologi - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-010)",
+      "deskripsi": "Master data kategori pengukuran psikologi",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data reff_psikologi Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "reff_psikologi",
+        "definisi": "Master data kategori pengukuran psikologi"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_param_psikologi",
+        "namaEntitas": "reff_psikologi",
+        "alias": "id_param_psikologi",
+        "definisi": "ID unik test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "cat",
+        "namaEntitas": "reff_psikologi",
+        "alias": "cat",
+        "definisi": "Kategori psikologi",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "item",
+        "namaEntitas": "reff_psikologi",
+        "alias": "item",
+        "definisi": "item test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "kode",
+        "namaEntitas": "reff_psikologi",
+        "alias": "kode",
+        "definisi": "Kode instrumen psikologi",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "active",
+        "namaEntitas": "reff_psikologi",
+        "alias": "active",
+        "definisi": "Status keaktifan parameter",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-011": {
+    "idDataset": "DS-PORA-011",
+    "step1Informasi": {
+      "nama": "Data reff_skill - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-011)",
+      "deskripsi": "Master data kategori pengukuran skill",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data reff_skill Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "reff_skill",
+        "definisi": "Master data kategori pengukuran skill"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_param_skill",
+        "namaEntitas": "reff_skill",
+        "alias": "id_param_skill",
+        "definisi": "ID unik test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_cabor",
+        "namaEntitas": "reff_skill",
+        "alias": "id_cabor",
+        "definisi": "ID unik cabang olahraga",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "item",
+        "namaEntitas": "reff_skill",
+        "alias": "item",
+        "definisi": "item test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "jenis_item",
+        "namaEntitas": "reff_skill",
+        "alias": "jenis_item",
+        "definisi": "Jenis item test pengukuran",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "active",
+        "namaEntitas": "reff_skill",
+        "alias": "active",
+        "definisi": "Status keaktifan parameter",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-012": {
+    "idDataset": "DS-PORA-012",
+    "step1Informasi": {
+      "nama": "Data wadah_pembinaan - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-012)",
+      "deskripsi": "Master data wadah pembinaan olahragawan",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data wadah_pembinaan Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "wadah_pembinaan",
+        "definisi": "Master data wadah pembinaan olahragawan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_wadah",
+        "namaEntitas": "wadah_pembinaan",
+        "alias": "id_wadah",
+        "definisi": "ID unik wadah pembinaan",
+        "tipeData": "VARCHAR",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "singkatan",
+        "namaEntitas": "wadah_pembinaan",
+        "alias": "singkatan",
+        "definisi": "versi pendek nama wadah",
+        "tipeData": "VARCHAR",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama",
+        "namaEntitas": "wadah_pembinaan",
+        "alias": "nama",
+        "definisi": "Nama Wadah pembinaan",
+        "tipeData": "VARCHAR",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "jenis_wadah",
+        "namaEntitas": "wadah_pembinaan",
+        "alias": "jenis_wadah",
+        "definisi": "jenis wadah pembinaan",
+        "tipeData": "VARCHAR",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "deskripsi",
+        "namaEntitas": "wadah_pembinaan",
+        "alias": "deskripsi",
+        "definisi": "uraian singkat wadah pembinaan",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "periode",
+        "namaEntitas": "wadah_pembinaan",
+        "alias": "periode",
+        "definisi": "Tahun/periode berjalannya pembinaan",
+        "tipeData": "VARCHAR",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "wilayah",
+        "namaEntitas": "wadah_pembinaan",
+        "alias": "wilayah",
+        "definisi": "kode wilayah wadah pembinaan beroperasi",
+        "tipeData": "VARCHAR",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "alamat",
+        "namaEntitas": "wadah_pembinaan",
+        "alias": "alamat",
+        "definisi": "alamat dari wadah pembinaan",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-013": {
+    "idDataset": "DS-PORA-013",
+    "step1Informasi": {
+      "nama": "Data atlet_cabor - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-013)",
+      "deskripsi": "Tabel untuk menyimpan data atlet cabang olahraga",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data atlet_cabor Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "atlet_cabor",
+        "definisi": "Tabel untuk menyimpan data atlet cabang olahraga"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_atlet_cabor",
+        "namaEntitas": "atlet_cabor",
+        "alias": "id_atlet_cabor",
+        "definisi": "ID unik atlet cabang olahraga",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_cabor",
+        "namaEntitas": "atlet_cabor",
+        "alias": "id_cabor",
+        "definisi": "ID unik cabang olahraga",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "atlet_cabor",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "nomor",
+        "namaEntitas": "atlet_cabor",
+        "alias": "nomor",
+        "definisi": "Nomor cabang olahraga",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-014": {
+    "idDataset": "DS-PORA-014",
+    "step1Informasi": {
+      "nama": "Data atlet_pelatih - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-014)",
+      "deskripsi": "Tabel untuk menyimpan data relasi pembinaan antara atlet dan pelatih",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data atlet_pelatih Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "atlet_pelatih",
+        "definisi": "Tabel untuk menyimpan data relasi pembinaan antara atlet dan pelatih"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "id",
+        "definisi": "ID unik relasi",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_tenor",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "id_tenor",
+        "definisi": "ID unik tenaga olahraga",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "peran",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "peran",
+        "definisi": "Peran pelatih",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_mulai",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "tanggal_mulai",
+        "definisi": "Tanggal mulai kontrak",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_selesai",
+        "namaEntitas": "atlet_pelatih",
+        "alias": "tanggal_selesai",
+        "definisi": "Tanggal selesai kontrak",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-015": {
+    "idDataset": "DS-PORA-015",
+    "step1Informasi": {
+      "nama": "Data atlet_pendidikan - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-015)",
+      "deskripsi": "Tabel untuk menyimpan data riwayat pendidikan atlet",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data atlet_pendidikan Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "atlet_pendidikan",
+        "definisi": "Tabel untuk menyimpan data riwayat pendidikan atlet"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_atlet_pendidikan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "id_atlet_pendidikan",
+        "definisi": "ID unik pendidikan atlet",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_pendidikan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "id_pendidikan",
+        "definisi": "ID unik pendidikan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "jenjang_pendidikan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "jenjang_pendidikan",
+        "definisi": "Jenjang pendidikan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama_pendidikan",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "nama_pendidikan",
+        "definisi": "Nama pendidikan",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "prodi",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "prodi",
+        "definisi": "Nama program studi",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "provinsi",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "provinsi",
+        "definisi": "Nama provinsi",
+        "tipeData": "varchar",
+        "formatPanjang": "200",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "negara",
+        "namaEntitas": "atlet_pendidikan",
+        "alias": "negara",
+        "definisi": "Nama negara",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-016": {
+    "idDataset": "DS-PORA-016",
+    "step1Informasi": {
+      "nama": "Data detil_pembinaan - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-016)",
+      "deskripsi": "Tabel untuk menyimpan data histori pembinaan olahragawan",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data detil_pembinaan Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "detil_pembinaan",
+        "definisi": "Tabel untuk menyimpan data histori pembinaan olahragawan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_pembinaan",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "id_pembinaan",
+        "definisi": "ID unik pendataan pembinaan",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_wadah",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "id_wadah",
+        "definisi": "ID unik wadah pembinaan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "tgl_mulai",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "tgl_mulai",
+        "definisi": "Periode mulai pembinaan",
+        "tipeData": "date",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tgl_selesai",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "tgl_selesai",
+        "definisi": "Periode Akhir pembinaan",
+        "tipeData": "date",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "status",
+        "namaEntitas": "detil_pembinaan",
+        "alias": "status",
+        "definisi": "Status pembinaan olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-017": {
+    "idDataset": "DS-PORA-017",
+    "step1Informasi": {
+      "nama": "Data histori_prestasi - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-017)",
+      "deskripsi": "Tabel untuk menyimpan data histori prestasi olahragawan",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data histori_prestasi Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "histori_prestasi",
+        "definisi": "Tabel untuk menyimpan data histori prestasi olahragawan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_histori_prestasi",
+        "namaEntitas": "histori_prestasi",
+        "alias": "id_histori_prestasi",
+        "definisi": "ID unik histori prestasi",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "histori_prestasi",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "jenis_event",
+        "namaEntitas": "histori_prestasi",
+        "alias": "jenis_event",
+        "definisi": "Nama Event",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "level_event",
+        "namaEntitas": "histori_prestasi",
+        "alias": "level_event",
+        "definisi": "Level Event",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "kategori_event",
+        "namaEntitas": "histori_prestasi",
+        "alias": "kategori_event",
+        "definisi": "Kategori Event",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "nama_event",
+        "namaEntitas": "histori_prestasi",
+        "alias": "nama_event",
+        "definisi": "Nama Event",
+        "tipeData": "Varchar",
+        "formatPanjang": "200",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "prestasi",
+        "namaEntitas": "histori_prestasi",
+        "alias": "prestasi",
+        "definisi": "Nama Prestasi",
+        "tipeData": "Varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "nomor",
+        "namaEntitas": "histori_prestasi",
+        "alias": "nomor",
+        "definisi": "Nomor cabang olahraga",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "peringkat",
+        "namaEntitas": "histori_prestasi",
+        "alias": "peringkat",
+        "definisi": "peringkat",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "capaian_perolehan_score",
+        "namaEntitas": "histori_prestasi",
+        "alias": "capaian_perolehan_score",
+        "definisi": "Skor",
+        "tipeData": "Varchar",
+        "formatPanjang": "200",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "nama_penyelenggara",
+        "namaEntitas": "histori_prestasi",
+        "alias": "nama_penyelenggara",
+        "definisi": "Nama penyelenggara",
+        "tipeData": "Varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tempat_penyelenggaran",
+        "namaEntitas": "histori_prestasi",
+        "alias": "tempat_penyelenggaran",
+        "definisi": "Lokasi",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "histori_prestasi",
+        "alias": "tahun",
+        "definisi": "Tahun perolehan",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-018": {
+    "idDataset": "DS-PORA-018",
+    "step1Informasi": {
+      "nama": "Data pelatnas_atlet - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-018)",
+      "deskripsi": "Tabel untuk menyimpan data atlet Pemusatan Latihan Nasional",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data pelatnas_atlet Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "pelatnas_atlet",
+        "definisi": "Tabel untuk menyimpan data atlet Pemusatan Latihan Nasional"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "id",
+        "definisi": "ID unik atlet Pemusatan Latihan Nasional",
+        "tipeData": "int",
+        "formatPanjang": "10",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "pelatnas_id",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "pelatnas_id",
+        "definisi": "ID unik Pemusatan Latihan Nasional",
+        "tipeData": "int",
+        "formatPanjang": "10",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "tahun",
+        "definisi": "Tahun",
+        "tipeData": "year",
+        "formatPanjang": "4",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "status",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "status",
+        "definisi": "Status atlet di pelatnas",
+        "tipeData": "\"enum('aktif'",
+        "formatPanjang": "'cadangan'",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "tanggal_gabung",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "tanggal_gabung",
+        "definisi": "Tahun gabung",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_keluar",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "tanggal_keluar",
+        "definisi": "Tahun keluar",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "keterangan",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "keterangan",
+        "definisi": "Keterangan",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "created_at",
+        "namaEntitas": "pelatnas_atlet",
+        "alias": "created_at",
+        "definisi": "Data dibuat",
+        "tipeData": "timestamp",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-019": {
+    "idDataset": "DS-PORA-019",
+    "step1Informasi": {
+      "nama": "Data pengukuran_antro - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-019)",
+      "deskripsi": "Tabel untuk menyimpan data pengukuran antropometri",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data pengukuran_antro Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "pengukuran_antro",
+        "definisi": "Tabel untuk menyimpan data pengukuran antropometri"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_pengukuran_antro",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "id_pengukuran_antro",
+        "definisi": "ID unik pengukuran antropometri",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_antro",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "id_param_antro",
+        "definisi": "ID uni parameter antropometri",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_antro",
+        "alias": "score",
+        "definisi": "Skor antropometri",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-020": {
+    "idDataset": "DS-PORA-020",
+    "step1Informasi": {
+      "nama": "Data pengukuran_biomotorik - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-020)",
+      "deskripsi": "Tabel untuk menyimpan data pengukuran biomotorik",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data pengukuran_biomotorik Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "pengukuran_biomotorik",
+        "definisi": "Tabel untuk menyimpan data pengukuran biomotorik"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_pengukuran_biomotorik",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "id_pengukuran_biomotorik",
+        "definisi": "ID unik pengukuran biomotorik",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_biomotorik",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "id_param_biomotorik",
+        "definisi": "ID uni parameter biomotorik",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_biomotorik",
+        "alias": "score",
+        "definisi": "Skor antropometri",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-021": {
+    "idDataset": "DS-PORA-021",
+    "step1Informasi": {
+      "nama": "Data pengukuran_kebugaran - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-021)",
+      "deskripsi": "Tabel untuk menyimpan data pengukuran kebugaran",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data pengukuran_kebugaran Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "pengukuran_kebugaran",
+        "definisi": "Tabel untuk menyimpan data pengukuran kebugaran"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_pengukuran_kebugaran",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "id_pengukuran_kebugaran",
+        "definisi": "ID unik pengukuran kebugaran",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_kebugaran",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "id_param_kebugaran",
+        "definisi": "ID unik parameter kebugaran",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_kebugaran",
+        "alias": "score",
+        "definisi": "Skor kebugaran",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-022": {
+    "idDataset": "DS-PORA-022",
+    "step1Informasi": {
+      "nama": "Data pengukuran_kesehatan - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-022)",
+      "deskripsi": "Tabel untuk menyimpan data pengukuran kesehatan",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data pengukuran_kesehatan Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "pengukuran_kesehatan",
+        "definisi": "Tabel untuk menyimpan data pengukuran kesehatan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_pengukuran_kesehatan",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "id_pengukuran_kesehatan",
+        "definisi": "ID unik pengukuran kesehatan",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_kesehatan",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "id_param_kesehatan",
+        "definisi": "ID unik parameter kesehatan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_kesehatan",
+        "alias": "score",
+        "definisi": "Skor kesehatan",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-023": {
+    "idDataset": "DS-PORA-023",
+    "step1Informasi": {
+      "nama": "Data pengukuran_psikologi - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-023)",
+      "deskripsi": "Tabel untuk menyimpan data pengukuran psikologi",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data pengukuran_psikologi Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "pengukuran_psikologi",
+        "definisi": "Tabel untuk menyimpan data pengukuran psikologi"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_pengukuran_psikologi",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "id_pengukuran_psikologi",
+        "definisi": "ID unik pengukuran psikologi",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_psikologi",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "id_param_psikologi",
+        "definisi": "ID unik parameter psikologi",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_psikologi",
+        "alias": "score",
+        "definisi": "Skor psikologi",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-024": {
+    "idDataset": "DS-PORA-024",
+    "step1Informasi": {
+      "nama": "Data pengukuran_skill - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-024)",
+      "deskripsi": "Tabel untuk menyimpan data pengukuran skill",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data pengukuran_skill Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "pengukuran_skill",
+        "definisi": "Tabel untuk menyimpan data pengukuran skill"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_pengukuran_skill",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "id_pengukuran_skill",
+        "definisi": "ID unik pengukuran skill",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_param_skill",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "id_param_skill",
+        "definisi": "ID unik parameter skill",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "bulan",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "bulan",
+        "definisi": "Bulan test",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tahun",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "tahun",
+        "definisi": "Tahun test",
+        "tipeData": "varchar",
+        "formatPanjang": "6",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_tes",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "tanggal_tes",
+        "definisi": "Tanggal test",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "score",
+        "namaEntitas": "pengukuran_skill",
+        "alias": "score",
+        "definisi": "Skor skill",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-025": {
+    "idDataset": "DS-PORA-025",
+    "step1Informasi": {
+      "nama": "Data riwayat_penugasan - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-025)",
+      "deskripsi": "Tabel untuk menyimpan data riwayat penugasan",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data riwayat_penugasan Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "riwayat_penugasan",
+        "definisi": "Tabel untuk menyimpan data riwayat penugasan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_penugasan",
+        "namaEntitas": "riwayat_penugasan",
+        "alias": "id_penugasan",
+        "definisi": "ID unik penugasan",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "id_wadah",
+        "namaEntitas": "riwayat_penugasan",
+        "alias": "id_wadah",
+        "definisi": "ID unik wadah pembinaan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "id_cabor",
+        "namaEntitas": "riwayat_penugasan",
+        "alias": "id_cabor",
+        "definisi": "ID unik cabang olahraga",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "id_tenor",
+        "namaEntitas": "riwayat_penugasan",
+        "alias": "id_tenor",
+        "definisi": "ID unik tenor",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tgl_mulai",
+        "namaEntitas": "riwayat_penugasan",
+        "alias": "tgl_mulai",
+        "definisi": "Tanggal mulai penugasan",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "tgl_selesai",
+        "namaEntitas": "riwayat_penugasan",
+        "alias": "tgl_selesai",
+        "definisi": "Tanggal selesai penugasan",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "peran",
+        "namaEntitas": "riwayat_penugasan",
+        "alias": "peran",
+        "definisi": "Peran/Jabatan penugasan",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-026": {
+    "idDataset": "DS-PORA-026",
+    "step1Informasi": {
+      "nama": "Data riwayat_sertifikasi - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-026)",
+      "deskripsi": "Tabel untuk menyimpan data riwayat sertifikasi",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data riwayat_sertifikasi Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "riwayat_sertifikasi",
+        "definisi": "Tabel untuk menyimpan data riwayat sertifikasi"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_riwayat_sertifikasi",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "id_riwayat_sertifikasi",
+        "definisi": "ID unik sertifikasi",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_tenor",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "id_tenor",
+        "definisi": "ID unik tenor",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "level_sertifikasi",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "level_sertifikasi",
+        "definisi": "Tingkat Sertifikasi",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "nama_sertifikasi_pelatihan",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "nama_sertifikasi_pelatihan",
+        "definisi": "Nama sertifikasi atau pelatihan yang diikuti",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "penyelenggara",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "penyelenggara",
+        "definisi": "Lembaga Penyelenggara sertifikasi",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "nomor_sertifikat",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "nomor_sertifikat",
+        "definisi": "Nomor Sertifikat resmi",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_berlaku",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "tanggal_berlaku",
+        "definisi": "Batas masa berlaku sertifikasi",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "tanggal_sertifikat",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "tanggal_sertifikat",
+        "definisi": "Tanggal diterbitkannya sertifikat",
+        "tipeData": "date",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "profesi",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "profesi",
+        "definisi": "Bidang Profesi",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "main_lisensi",
+        "namaEntitas": "riwayat_sertifikasi",
+        "alias": "main_lisensi",
+        "definisi": "Apakah lisensi utama",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-027": {
+    "idDataset": "DS-PORA-027",
+    "step1Informasi": {
+      "nama": "Data tenor_pendidikan - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-027)",
+      "deskripsi": "Tabel untuk menyimpan data Pendidikan Tenaga Keolahragaan",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data tenor_pendidikan Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "tenor_pendidikan",
+        "definisi": "Tabel untuk menyimpan data Pendidikan Tenaga Keolahragaan"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_tenor_pendidikan",
+        "namaEntitas": "tenor_pendidikan",
+        "alias": "id_tenor_pendidikan",
+        "definisi": "ID unik data pendididkan tenaga keolahragaan",
+        "tipeData": "int",
+        "formatPanjang": "11",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_tenor",
+        "namaEntitas": "tenor_pendidikan",
+        "alias": "id_tenor",
+        "definisi": "ID unik data tenaga keolahragaan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "jenjang_pendidikan",
+        "namaEntitas": "tenor_pendidikan",
+        "alias": "jenjang_pendidikan",
+        "definisi": "Nama jenjang pendidikan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama pendidikan",
+        "namaEntitas": "tenor_pendidikan",
+        "alias": "nama pendidikan",
+        "definisi": "Nama pendidikan",
+        "tipeData": "varchar",
+        "formatPanjang": "21",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "prodi",
+        "namaEntitas": "tenor_pendidikan",
+        "alias": "prodi",
+        "definisi": "Nama Program studi",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "provinsi",
+        "namaEntitas": "tenor_pendidikan",
+        "alias": "provinsi",
+        "definisi": "Nama Provinsi",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "negara",
+        "namaEntitas": "tenor_pendidikan",
+        "alias": "negara",
+        "definisi": "Negara",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-028": {
+    "idDataset": "DS-PORA-028",
+    "step1Informasi": {
+      "nama": "Data atlet_disabilitas - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-028)",
+      "deskripsi": "Master Data atlet disabilitas",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data atlet_disabilitas Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "atlet_disabilitas",
+        "definisi": "Master Data atlet disabilitas"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_klasifikasi",
+        "namaEntitas": "atlet_disabilitas",
+        "alias": "id_klasifikasi",
+        "definisi": "ID unik klasifikasi",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_olahragawan",
+        "namaEntitas": "atlet_disabilitas",
+        "alias": "id_olahragawan",
+        "definisi": "ID unik olahragawan",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      }
+    ]
+  },
+  "DS-PORA-029": {
+    "idDataset": "DS-PORA-029",
+    "step1Informasi": {
+      "nama": "Data cabor - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-029)",
+      "deskripsi": "Master Data Cabang Olahrgaa sebuah tabel utama berisikan atribut-atribut cabang olahraga",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data cabor Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "cabor",
+        "definisi": "Master Data Cabang Olahrgaa sebuah tabel utama berisikan atribut-atribut cabang olahraga"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_cabor",
+        "namaEntitas": "cabor",
+        "alias": "id_cabor",
+        "definisi": "ID unik cabang olahraga",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_lembaga",
+        "namaEntitas": "cabor",
+        "alias": "id_lembaga",
+        "definisi": "ID unik kode IOCO",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "nama_cabor",
+        "namaEntitas": "cabor",
+        "alias": "nama_cabor",
+        "definisi": "Nama Cabang Olahraga",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "nama_cabor_en",
+        "namaEntitas": "cabor",
+        "alias": "nama_cabor_en",
+        "definisi": "Nama Cabang Olahraga dalam versi bahasa inggris",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "jenis",
+        "namaEntitas": "cabor",
+        "alias": "jenis",
+        "definisi": "Kelompok Jenis cabang olarhaga",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "dbon",
+        "namaEntitas": "cabor",
+        "alias": "dbon",
+        "definisi": "Status cabor apakah termasuk dalam desain besar olahraga nasional",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "ppon",
+        "namaEntitas": "cabor",
+        "alias": "ppon",
+        "definisi": "Status cabor apakah termasuk dalam program PPON",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "olympic",
+        "namaEntitas": "cabor",
+        "alias": "olympic",
+        "definisi": "Status cabor apakah termasuk cabor unggulan pada ajang olimpiade",
+        "tipeData": "tinyint",
+        "formatPanjang": "1",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  },
+  "DS-PORA-030": {
+    "idDataset": "DS-PORA-030",
+    "step1Informasi": {
+      "nama": "Data klasifikasi - Manajemen Talenta Keolahragaan Kemenpora (DS-PORA-030)",
+      "deskripsi": "Master data klasifikasi disabilitas",
+      "tema": "Pendidikan dan Tenaga Kerja",
+      "jenisData": "Data Induk",
+      "klasifikasiRisiko": "Terbatas",
+      "frekuensi": "Tahunan",
+      "formatData": [
+        "JSON"
+      ],
+      "dampakKerahasiaan": "sedang",
+      "dampakIntegritas": "tinggi",
+      "dampakKetersediaan": "sedang",
+      "lisensi": "Creative Commons Attribution",
+      "versi": "Permenpora Nomor 5 Tahun 2023",
+      "standar": "Standar Data Statistik Nasional",
+      "kodeReferensi": "Kode Wilayah Administrasi Pemerintahan (Kemendagri)",
+      "tujuanPemanfaatan": "Pengelolaan data klasifikasi Kemenpora",
+      "kontak": "pusdatin@kemenpora.go.id"
+    },
+    "step2Entitas": [
+      {
+        "namaEntitas": "klasifikasi",
+        "definisi": "Master data klasifikasi disabilitas"
+      }
+    ],
+    "step3KamusData": [
+      {
+        "namaElemen": "id_klasifikasi",
+        "namaEntitas": "klasifikasi",
+        "alias": "id_klasifikasi",
+        "definisi": "ID unik klasifikasi",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "id_cabor",
+        "namaEntitas": "klasifikasi",
+        "alias": "id_cabor",
+        "definisi": "ID unik cabang olahraga",
+        "tipeData": "varchar",
+        "formatPanjang": "50",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": true,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "jenis_disabilitas",
+        "namaEntitas": "klasifikasi",
+        "alias": "jenis_disabilitas",
+        "definisi": "Jenis Disabilitas",
+        "tipeData": "varchar",
+        "formatPanjang": "255",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      },
+      {
+        "namaElemen": "klasifikasi_cabor",
+        "namaEntitas": "klasifikasi",
+        "alias": "klasifikasi_cabor",
+        "definisi": "Kode Klasifikasi",
+        "tipeData": "varchar",
+        "formatPanjang": "100",
+        "satuan": "-",
+        "sifatKewajiban": "Optional",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Opsional"
+      },
+      {
+        "namaElemen": "deskripsi",
+        "namaEntitas": "klasifikasi",
+        "alias": "deskripsi",
+        "definisi": "Deskripsi mengenai spesifikasi klasifikasi disabilitas",
+        "tipeData": "text",
+        "formatPanjang": "-",
+        "satuan": "-",
+        "sifatKewajiban": "Mandatory",
+        "isPrimaryKey": false,
+        "idStandar": "-",
+        "aturanValidasi": "Wajib diisi"
+      }
+    ]
+  }
+}

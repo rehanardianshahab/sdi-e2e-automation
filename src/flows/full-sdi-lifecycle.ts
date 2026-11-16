@@ -219,41 +219,47 @@ export async function runModuleC(
     );
   }
 
-  // Step 2: Entitas Data
+  // Step 2: Entitas Data (Loop dinamis seluruh entitas)
   await page.waitForTimeout(500);
   await dismissUnexpectedPopups(page, logger, mod);
-  const addEntitasBtn = page
-    .locator(
-      '#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")',
-    )
-    .first();
-  if (await addEntitasBtn.isVisible()) {
-    await addEntitasBtn.click();
-    const entModal = page.locator('[role="dialog"]');
-    if (await entModal.isVisible()) {
-      await entModal
-        .locator("input")
-        .first()
-        .fill(ds.step2Entitas[0].namaEntitas);
-      await entModal
-        .locator("textarea")
-        .first()
-        .fill(ds.step2Entitas[0].definisi);
-      await entModal
-        .locator('button:has-text("Tambah Entitas"), button:has-text("Simpan")')
-        .first()
-        .click();
-      logger.markSuccess(
-        logger.logProgress(
-          mod,
-          "CLICK_BUTTON",
-          "#button-save-entitas",
-          "Simpan Entitas",
-        ),
-        "Entitas berhasil disimpan",
-      );
+
+  const entitasList = ds.step2Entitas && ds.step2Entitas.length > 0 ? ds.step2Entitas : [];
+  for (let i = 0; i < entitasList.length; i++) {
+    const ent = entitasList[i];
+    const addEntitasBtn = page
+      .locator(
+        '#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")',
+      )
+      .first();
+    if (await addEntitasBtn.isVisible()) {
+      await addEntitasBtn.click();
+      const entModal = page.locator('[role="dialog"]').first();
+      if (await entModal.isVisible()) {
+        await entModal
+          .locator('#input-dataset-step2-nama-entitas, input')
+          .first()
+          .fill(ent.namaEntitas);
+        await entModal
+          .locator('#input-dataset-step2-definisi-entitas, textarea')
+          .first()
+          .fill((ent.definisi || '').slice(0, 255));
+        await entModal
+          .locator('button:has-text("Tambah Entitas"), button:has-text("Simpan")')
+          .first()
+          .click();
+        await page.waitForTimeout(600);
+      }
     }
   }
+  logger.markSuccess(
+    logger.logProgress(
+      mod,
+      "CLICK_BUTTON",
+      "#button-save-entitas",
+      "Simpan Entitas Terelasi",
+    ),
+    `Berhasil menyimpan ${entitasList.length} entitas`,
+  );
 
   const nextBtn2 = page
     .locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 3")')
@@ -271,41 +277,90 @@ export async function runModuleC(
     );
   }
 
-  // Step 3: Kamus Data
+  // Step 3: Kamus Data (Loop dinamis seluruh kamus data)
   await page.waitForTimeout(500);
   await dismissUnexpectedPopups(page, logger, mod);
-  const addElemBtn = page
-    .locator(
-      '#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")',
-    )
-    .first();
-  if (await addElemBtn.isVisible()) {
-    await addElemBtn.click();
-    const elemModal = page.locator('[role="dialog"]');
-    if (await elemModal.isVisible()) {
-      await elemModal
-        .locator("input")
-        .first()
-        .fill(ds.step3KamusData[0].namaElemen);
-      await elemModal
-        .locator("textarea")
-        .first()
-        .fill(ds.step3KamusData[0].definisi);
-      await elemModal
-        .locator('button:has-text("Tambah Elemen"), button:has-text("Simpan")')
-        .first()
-        .click();
-      logger.markSuccess(
-        logger.logProgress(
-          mod,
-          "CLICK_BUTTON",
-          "#button-save-elemen",
-          "Simpan Elemen Kamus Data",
-        ),
-        "Elemen berhasil disimpan",
-      );
+
+  const kamusList = ds.step3KamusData && ds.step3KamusData.length > 0 ? ds.step3KamusData : [];
+  for (let i = 0; i < kamusList.length; i++) {
+    const elem = kamusList[i];
+    const addElemBtn = page
+      .locator(
+        '#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")',
+      )
+      .first();
+    if (await addElemBtn.isVisible()) {
+      await addElemBtn.click();
+      const elemModal = page.locator('[role="dialog"]').first();
+      if (await elemModal.isVisible()) {
+        const entitasTrigger = elemModal.locator('#select-dataset-step3-modal-entitas');
+        if (await entitasTrigger.isVisible()) {
+          const currentEnt = (await entitasTrigger.innerText().catch(() => '')).trim();
+          if (currentEnt !== elem.namaEntitas) {
+            await entitasTrigger.click();
+            await page.waitForTimeout(250);
+            const entOpt = page.locator(`[role="option"]:has-text("${elem.namaEntitas}")`).first();
+            if (await entOpt.isVisible({ timeout: 2000 }).catch(() => false)) {
+              await entOpt.click();
+              await page.waitForTimeout(200);
+            }
+          }
+        }
+
+        const inputNama = elemModal.locator('#input-dataset-step3-modal-nama-elemen, input').first();
+        if (await inputNama.isVisible()) await inputNama.fill(elem.namaElemen);
+
+        const inputAlias = elemModal.locator('#input-dataset-step3-modal-alias');
+        if (await inputAlias.isVisible()) await inputAlias.fill(elem.alias || elem.namaElemen);
+
+        const inputDef = elemModal.locator('#textarea-dataset-step3-modal-definisi, textarea').first();
+        if (await inputDef.isVisible()) await inputDef.fill((elem.definisi || '').slice(0, 255));
+
+        const inputSatuan = elemModal.locator('#input-dataset-step3-modal-satuan');
+        if (await inputSatuan.isVisible()) await inputSatuan.fill(elem.satuan || '-');
+
+        const inputFormat = elemModal.locator('#input-dataset-step3-modal-format-panjang');
+        if (await inputFormat.isVisible()) await inputFormat.fill(elem.formatPanjang || 'VARCHAR(255)');
+
+        if (elem.sifatKewajiban === 'Optional') {
+          const kewajibanTrigger = elemModal.locator('#select-dataset-step3-modal-sifat-kewajiban');
+          if (await kewajibanTrigger.isVisible()) {
+            await kewajibanTrigger.click();
+            await page.waitForTimeout(200);
+            const opt = page.locator('[role="option"]:has-text("Optional")').first();
+            if (await opt.isVisible()) await opt.click();
+          }
+        }
+
+        await elemModal
+          .locator('#button-dataset-step3-modal-simpan, button:has-text("Tambah Elemen"), button:has-text("Simpan")')
+          .first()
+          .click();
+        await page.waitForTimeout(500);
+      }
     }
   }
+
+  for (const elem of kamusList) {
+    if (elem.isPrimaryKey) {
+      const pkRadio = page.locator(`tbody tr:has-text("${elem.alias || elem.namaElemen}") button:has-text("Pilih PK"), tbody tr:has-text("${elem.alias || elem.namaElemen}") input[type="radio"]`).first();
+      if (await pkRadio.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await pkRadio.click({ force: true });
+        await page.waitForTimeout(300);
+      }
+      break;
+    }
+  }
+
+  logger.markSuccess(
+    logger.logProgress(
+      mod,
+      "CLICK_BUTTON",
+      "#button-save-elemen",
+      "Simpan Elemen Kamus Data",
+    ),
+    `Berhasil menyimpan ${kamusList.length} elemen kamus data`,
+  );
 
   const submitBtn = page
     .locator(
