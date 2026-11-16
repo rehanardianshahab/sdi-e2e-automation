@@ -19,6 +19,7 @@ import {
   runLayananSplpVerification,
   runPengajuanAksesLifecycleVerification
 } from './flows/verify-page-access.js';
+import { runRegisterKemenporaMTNFlow } from './flows/register-kemenpora-mtn-flow.js';
 
 dotenv.config();
 
@@ -72,29 +73,39 @@ async function main() {
   printBanner();
 
   // Pemilihan Mode Eksekusi
-  let executionMode = 'cases';
+  let executionMode = 'excel-id-data';
   try {
     executionMode = await select({
       message: 'Pilih Mode Eksekusi Pengujian:',
       choices: [
         {
-          name: '1. Verifikasi Halaman & Kasus Spesifik (Terbatas, Tertutup, Revisi) [Recommended]',
+          name: '1. Insert Dataset, Entitas & Kamus Data dari Excel berdasarkan ID Data (DT-PORA-001 s.d. DT-PORA-030) [Recommended]',
+          value: 'excel-id-data',
+          description: 'Insert RegDataset (Step 1), RegEntitasData (Step 2), dan RegKamusData (Step 3) berdasarkan ID Data dari file .xlsx'
+        },
+        {
+          name: '2. Verifikasi Halaman & Kasus Spesifik (Terbatas, Tertutup, Revisi, Layanan, Pengajuan Akses)',
           value: 'cases',
           description: 'Pilih dan uji skenario spesifik: Data Terbatas, Data Tertutup, atau Alur Revisi'
         },
         {
-          name: '2. Full SDI Lifecycle Form Seeding (Modul A s.d. Modul E berurutan)',
+          name: '3. Full SDI Lifecycle Form Seeding (Modul A s.d. Modul E berurutan)',
           value: 'full',
           description: 'Jalankan automasi pengisian form lengkap A s.d. E dengan akun login aktif'
         }
       ],
-      default: 'cases'
+      default: 'excel-id-data'
     });
   } catch (err: any) {
     if (err.name === 'ExitPromptError') {
       console.log('\nOperasi dibatalkan.');
       process.exit(0);
     }
+  }
+
+  if (executionMode === 'excel-id-data') {
+    await runRegisterKemenporaMTNFlow({ interactive: true });
+    return;
   }
 
   if (executionMode === 'cases') {

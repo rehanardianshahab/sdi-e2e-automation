@@ -14,6 +14,7 @@ import {
 import { resolveInstansiContext, selectStrictInstansi } from '../utils/instansi-helper.js';
 import { fillById, clickById, ensureCorrectPage } from '../utils/id-helper.js';
 import { generateSdiE2EPayload } from '../generators/gemini-generator.js';
+import { fillDatasetRegistrationFromExcelPayload } from '../generators/kemenpora-excel-loader.js';
 import { SdiAutomationPayload } from '../schemas/sdi-e2e.schema.js';
 
 dotenv.config();
@@ -130,12 +131,10 @@ export async function runPageByPageVerification(options: VerificationOptions = {
   const page = await context.newPage();
 
   const dummyLogger = new StepLogger(['AUTH', 'A', 'B', 'C', 'D', 'E'], `Verification-${options.caseType || 'terbatas'}`);
-  const payload = await generateSdiE2EPayload(undefined, userEmail);
+  const payload = await generateSdiE2EPayload(undefined, userEmail, options.caseType || 'terbatas');
 
   if (options.caseType === 'tertutup') {
     payload.registrasiDataset.step1Informasi.klasifikasiRisiko = 'Tertutup';
-    payload.registrasiDataset.step1Informasi.nama = `Data Rahasia Seleksi dan Rekam Medis Atlet Nasional [${new Date().toLocaleTimeString('id-ID', { hour12: false }).replace(/\./g, ':')}]`;
-    payload.registrasiDataset.step1Informasi.deskripsi = `Dataset klasifikasi tertutup negara yang memuat identitas rekam medis atlet strategis nasional sesuai ketentuan kerahasiaan informasi publik.`;
     payload.registrasiDataset.step1Informasi.dampakKerahasiaan = 'tinggi';
     payload.registrasiDataset.step1Informasi.dampakIntegritas = 'tinggi';
     payload.registrasiDataset.step1Informasi.dampakKetersediaan = 'tinggi';
@@ -387,138 +386,9 @@ export async function runPageByPageVerification(options: VerificationOptions = {
         }
 
         // ----------------------------------------------------------------------
-        // STEP 1: INFORMASI DATASET (Isi semua field & verifikasi validasi)
+        // STEP 1 (RegDataset), STEP 2 (RegEntitasData), & STEP 3 (RegKamusData)
         // ----------------------------------------------------------------------
-        const descInput = waliPage.locator('#input-dataset-step1-deskripsi, textarea').first();
-        if (await descInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-          const rawDesc =
-            payload.registrasiDataset.step1Informasi.deskripsi ||
-            'Dataset agregat terpadu penerima bantuan sosial dan program pemberdayaan masyarakat nasional.';
-          // Batasi panjang deskripsi maksimal 255 karakter
-          await descInput.fill(rawDesc.slice(0, 255));
-        }
-
-        // 1. Pilih Klasifikasi Risiko: Terbuka | Terbatas | Tertutup
-        const targetKlasifikasi = payload.registrasiDataset.step1Informasi.klasifikasiRisiko || 'Terbatas';
-        const klasifikasiBtn = waliPage.locator(`button:has-text("${targetKlasifikasi}")`).first();
-        if (await klasifikasiBtn.isVisible({ timeout: 2500 }).catch(() => false)) {
-          await klasifikasiBtn.click({ force: true });
-          console.log(`   🏷️  Klasifikasi Risiko dipilih: ${targetKlasifikasi}`);
-          await waliPage.waitForTimeout(400);
-        }
-
-        // 2. Pilih Format Ketersediaan Data (JSON, REST API, CSV)
-        for (const fmt of ['JSON', 'REST API', 'CSV']) {
-          const fmtBtn = waliPage.locator(`button:has-text("${fmt}")`).first();
-          if (await fmtBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
-            await fmtBtn.click({ force: true }).catch(() => {});
-          }
-        }
-
-        // 3. Isi dropdown select wajib di Step 1: Tema, Jenis Data, Frekuensi, & Dampak
-        const selects = waliPage.locator('select');
-        const selectCount = await selects.count();
-        for (let i = 0; i < selectCount; i++) {
-          const s = selects.nth(i);
-          const html = await s.innerHTML().catch(() => '');
-          if (html.includes('Pilih Tema') || html.includes('Perlindungan Sosial')) {
-            await s.selectOption({ label: 'Perlindungan Sosial dan Kesehatan' }).catch(async () => {
-              await s.selectOption({ index: 4 }).catch(() => {});
-            });
-          } else if (html.includes('Pilih Jenis Data') || html.includes('Data Induk')) {
-            await s.selectOption({ label: 'Data Induk' }).catch(async () => {
-              await s.selectOption({ index: 4 }).catch(() => {});
-            });
-          } else if (html.includes('Pilih Frekuensi') || html.includes('Tahunan')) {
-            await s.selectOption({ label: 'Bulanan' }).catch(async () => {
-              await s.selectOption({ index: 4 }).catch(() => {});
-            });
-          } else if (html.includes('Dampak minimal') || html.includes('rendah')) {
-            // Kerahasiaan, Integritas, Ketersediaan
-            const impactVal = targetKlasifikasi === 'Tertutup' ? 'tinggi' : 'sedang';
-            await s.selectOption({ value: impactVal }).catch(async () => {
-              await s.selectOption({ index: targetKlasifikasi === 'Tertutup' ? 3 : 2 }).catch(() => {});
-            });
-          }
-        }
-        await waliPage.waitForTimeout(500);
-
-        // Verifikasi tidak ada error validasi di Step 1
-        await assertNoValidationErrors(waliPage, 'Registrasi Dataset Step 1 (Informasi Dataset)');
-
-        const nextBtn1 = waliPage.locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 2"), button:has-text("Lanjut")').first();
-        if (await nextBtn1.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nextBtn1.click({ force: true });
-          await waliPage.waitForTimeout(1500);
-        }
-
-        // ----------------------------------------------------------------------
-        // STEP 2: ENTITAS / STRUKTUR DATA (Isi semua field & verifikasi validasi)
-        // ----------------------------------------------------------------------
-        const addEntitasBtn = waliPage.locator('#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")').first();
-        if (await addEntitasBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await addEntitasBtn.click({ force: true });
-          const dialog = waliPage.locator('[role="dialog"]').first();
-          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
-            const entName = dialog.locator('input').first();
-            if (await entName.isVisible()) {
-              await entName.fill(payload.registrasiDataset.step2Entitas[0].namaEntitas || 'Data Penerima Bantuan');
-            }
-            const entDesc = dialog.locator('textarea').first();
-            if (await entDesc.isVisible()) {
-              await entDesc.fill(payload.registrasiDataset.step2Entitas[0].definisi || 'Entitas catatan data individu penerima manfaat perlindungan sosial.');
-            }
-
-            // Verifikasi tidak ada error validasi pada modal entitas
-            await assertNoValidationErrors(waliPage, 'Modal Tambah Entitas Step 2');
-
-            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
-            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
-            await waliPage.waitForTimeout(1000);
-          }
-        }
-
-        // Verifikasi tidak ada error validasi di daftar entitas Step 2
-        await assertNoValidationErrors(waliPage, 'Registrasi Dataset Step 2 (Daftar Entitas)');
-
-        const nextBtn2 = waliPage.locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 3"), button:has-text("Lanjut")').first();
-        if (await nextBtn2.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nextBtn2.click({ force: true });
-          await waliPage.waitForTimeout(1500);
-        }
-
-        // ----------------------------------------------------------------------
-        // STEP 3: KAMUS DATA / ELEMEN (Isi semua field & verifikasi validasi)
-        // ----------------------------------------------------------------------
-        const addElemBtn = waliPage.locator('#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")').first();
-        if (await addElemBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await addElemBtn.click({ force: true });
-          const dialog = waliPage.locator('[role="dialog"]').first();
-          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
-            // Isi semua input di modal kamus data
-            const inputs = dialog.locator('input');
-            const inCount = await inputs.count();
-            if (inCount >= 1) await inputs.nth(0).fill('Nomor Induk Kependudukan');
-            if (inCount >= 2) await inputs.nth(1).fill('nik');
-            if (inCount >= 3) await inputs.nth(2).fill('-');
-            if (inCount >= 4) await inputs.nth(3).fill('16 karakter numerik');
-
-            const elDesc = dialog.locator('textarea').first();
-            if (await elDesc.isVisible()) {
-              await elDesc.fill('Nomor identitas kependudukan tunggal terverifikasi dan tervalidasi.');
-            }
-
-            // Verifikasi tidak ada error validasi pada modal kamus data
-            await assertNoValidationErrors(waliPage, 'Modal Tambah Elemen Kamus Data Step 3');
-
-            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
-            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
-            await waliPage.waitForTimeout(1000);
-          }
-        }
-
-        // Verifikasi tidak ada error validasi di daftar kamus data Step 3
-        await assertNoValidationErrors(waliPage, 'Registrasi Dataset Step 3 (Daftar Kamus Data)');
+        await fillDatasetRegistrationFromExcelPayload(waliPage, payload, { validateErrors: true });
 
         // Buka modal konfirmasi review submit dataset
         const submitBtn = waliPage.locator(
@@ -761,9 +631,9 @@ export async function runRevisiRegistrasiVerification(): Promise<boolean> {
   console.log('╚══════════════════════════════════════════════════════════════════════════════╝');
   console.log(`Target Base URL: ${BASE_URL}`);
 
-  const userEmail = process.env.USER_PENGUSUL_USERNAME || 'exchange@test.kemensos.go.id';
+  const userEmail = process.env.USER_PENGUSUL_USERNAME || 'exchange@test.kemendagri.go.id';
   const userPassword = process.env.USER_PENGUSUL_PASSWORD || '123456789';
-  const walidataEmail = process.env.USER_WALIDATA_USERNAME || 'exchange@test.kemendagri.go.id';
+  const walidataEmail = process.env.USER_WALIDATA_USERNAME || 'exchange.kemenpora@test.kemenpora.go.id';
   const walidataPass = process.env.USER_WALIDATA_PASSWORD || '123456789';
   const sekUsername = process.env.USER_SEKRETARIAT_USERNAME || 'Mkalmunawar@gmail.com';
   const sekPassword = process.env.USER_SEKRETARIAT_PASSWORD || '@Celestial12';
@@ -773,9 +643,10 @@ export async function runRevisiRegistrasiVerification(): Promise<boolean> {
   const browser = await chromium.launch({ headless: isHeadless, slowMo: 100 });
   const checkResults: PageCheckResult[] = [];
   const dummyLogger = new StepLogger(['AUTH', 'A', 'B', 'C'], 'CaseRevisiRegistrasi');
+  const payload = await generateSdiE2EPayload(undefined, userEmail, 'revisi');
 
   const nowTime = new Date().toLocaleTimeString('id-ID', { hour12: false }).replace(/\./g, ':');
-  const datasetRevisiTitle = `Dataset Uji Revisi Registrasi Kemendagri [${nowTime}]`;
+  const datasetRevisiTitle = `${payload.kebutuhanData.namaData} [${nowTime}]`;
 
   async function recordRevisiStep(
     page: Page,
@@ -959,97 +830,8 @@ export async function runRevisiRegistrasiVerification(): Promise<boolean> {
         await regBtn.click();
         await waliPage1.waitForTimeout(3000);
 
-        // Step 1: Informasi Dataset (Maksimal 255 Karakter)
-        const descInput = waliPage1.locator('#input-dataset-step1-deskripsi, textarea').first();
-        if (await descInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-          const descAwal = 'Dataset kependudukan awal sebelum proses evaluasi review sekretariat.'.slice(0, 255);
-          await descInput.fill(descAwal);
-        }
-
-        const klasifikasiBtn = waliPage1.locator('button:has-text("Terbatas")').first();
-        if (await klasifikasiBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-          await klasifikasiBtn.click({ force: true });
-        }
-
-        for (const fmt of ['JSON', 'REST API', 'CSV']) {
-          const fmtBtn = waliPage1.locator(`button:has-text("${fmt}")`).first();
-          if (await fmtBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
-            await fmtBtn.click({ force: true }).catch(() => {});
-          }
-        }
-
-        const selects = waliPage1.locator('select');
-        const selectCount = await selects.count();
-        for (let i = 0; i < selectCount; i++) {
-          const s = selects.nth(i);
-          const html = await s.innerHTML().catch(() => '');
-          if (html.includes('Pilih Tema') || html.includes('Perlindungan Sosial')) {
-            await s.selectOption({ label: 'Perlindungan Sosial dan Kesehatan' }).catch(async () => {
-              await s.selectOption({ index: 4 }).catch(() => {});
-            });
-          } else if (html.includes('Pilih Jenis Data') || html.includes('Data Induk')) {
-            await s.selectOption({ label: 'Data Induk' }).catch(async () => {
-              await s.selectOption({ index: 4 }).catch(() => {});
-            });
-          } else if (html.includes('Pilih Frekuensi') || html.includes('Tahunan')) {
-            await s.selectOption({ label: 'Bulanan' }).catch(async () => {
-              await s.selectOption({ index: 4 }).catch(() => {});
-            });
-          } else if (html.includes('Dampak minimal') || html.includes('rendah')) {
-            await s.selectOption({ value: 'sedang' }).catch(async () => {
-              await s.selectOption({ index: 2 }).catch(() => {});
-            });
-          }
-        }
-        await waliPage1.waitForTimeout(500);
-
-        const nextBtn1 = waliPage1.locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 2"), button:has-text("Lanjut")').first();
-        if (await nextBtn1.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nextBtn1.click({ force: true });
-          await waliPage1.waitForTimeout(1500);
-        }
-
-        // Step 2: Tambah Entitas
-        const addEntitasBtn = waliPage1.locator('#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")').first();
-        if (await addEntitasBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await addEntitasBtn.click({ force: true });
-          const dialog = waliPage1.locator('[role="dialog"]').first();
-          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
-            const entName = dialog.locator('input').first();
-            if (await entName.isVisible()) await entName.fill('Entitas Data Kependudukan');
-            const entDesc = dialog.locator('textarea').first();
-            if (await entDesc.isVisible()) await entDesc.fill('Struktur data entitas profil kependudukan nasional.');
-            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
-            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
-            await waliPage1.waitForTimeout(1000);
-          }
-        }
-
-        const nextBtn2 = waliPage1.locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 3"), button:has-text("Lanjut")').first();
-        if (await nextBtn2.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nextBtn2.click({ force: true });
-          await waliPage1.waitForTimeout(1500);
-        }
-
-        // Step 3: Tambah Kamus Data
-        const addElemBtn = waliPage1.locator('#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")').first();
-        if (await addElemBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await addElemBtn.click({ force: true });
-          const dialog = waliPage1.locator('[role="dialog"]').first();
-          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
-            const inputs = dialog.locator('input');
-            const inCount = await inputs.count();
-            if (inCount >= 1) await inputs.nth(0).fill('Nomor Induk Kependudukan');
-            if (inCount >= 2) await inputs.nth(1).fill('nik');
-            if (inCount >= 3) await inputs.nth(2).fill('-');
-            if (inCount >= 4) await inputs.nth(3).fill('16 karakter');
-            const elDesc = dialog.locator('textarea').first();
-            if (await elDesc.isVisible()) await elDesc.fill('Nomor identitas unik kependudukan.');
-            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
-            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
-            await waliPage1.waitForTimeout(1000);
-          }
-        }
+        // Step 1 (RegDataset), Step 2 (RegEntitasData), & Step 3 (RegKamusData berdasarkan ID Data)
+        await fillDatasetRegistrationFromExcelPayload(waliPage1, payload, { validateErrors: false });
 
         // Submit Awal
         const submitBtn = waliPage1.locator(
@@ -1675,9 +1457,9 @@ export async function runPengajuanAksesLifecycleVerification(): Promise<boolean>
   console.log('╚══════════════════════════════════════════════════════════════════════════════╝');
   console.log(`Target Base URL: ${BASE_URL}`);
 
-  const userEmail = process.env.USER_PENGUSUL_USERNAME || 'exchange@test.kemensos.go.id';
+  const userEmail = process.env.USER_PENGUSUL_USERNAME || 'exchange@test.kemendagri.go.id';
   const userPassword = process.env.USER_PENGUSUL_PASSWORD || '123456789';
-  const walidataEmail = process.env.USER_WALIDATA_USERNAME || 'exchange@test.kemendagri.go.id';
+  const walidataEmail = process.env.USER_WALIDATA_USERNAME || 'exchange.kemenpora@test.kemenpora.go.id';
   const walidataPass = process.env.USER_WALIDATA_PASSWORD || '123456789';
   const sekUsername = process.env.USER_SEKRETARIAT_USERNAME || 'Mkalmunawar@gmail.com';
   const sekPassword = process.env.USER_SEKRETARIAT_PASSWORD || '@Celestial12';
@@ -1687,10 +1469,11 @@ export async function runPengajuanAksesLifecycleVerification(): Promise<boolean>
   const browser = await chromium.launch({ headless: isHeadless, slowMo: 100 });
   const checkResults: PageCheckResult[] = [];
   const dummyLogger = new StepLogger(['AUTH', 'A', 'B', 'C', 'D', 'E'], 'CasePengajuanAksesFullE2E');
+  const payload = await generateSdiE2EPayload(undefined, userEmail, 'terbatas');
 
   const nowTime = new Date().toLocaleTimeString('id-ID', { hour12: false }).replace(/\./g, ':');
   const nowMs = Date.now();
-  const datasetTitle = `Dataset Terpadu Kependudukan & Akses LID [${nowTime}]`;
+  const datasetTitle = `${payload.kebutuhanData.namaData} [${nowTime}]`;
 
   async function recordCase5Step(
     page: Page,
@@ -1881,96 +1664,8 @@ export async function runPengajuanAksesLifecycleVerification(): Promise<boolean>
         await regBtn.click();
         await page3.waitForTimeout(3000);
 
-        // Step 1: Informasi Dataset
-        const descInput = page3.locator('#input-dataset-step1-deskripsi, textarea').first();
-        if (await descInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-          await descInput.fill('Dataset agregat kependudukan terpadu untuk integrasi data perlindungan sosial nasional.'.slice(0, 255));
-        }
-
-        const klasifikasiBtn = page3.locator('button:has-text("Terbatas")').first();
-        if (await klasifikasiBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-          await klasifikasiBtn.click({ force: true });
-        }
-
-        for (const fmt of ['JSON', 'REST API', 'CSV']) {
-          const fmtBtn = page3.locator(`button:has-text("${fmt}")`).first();
-          if (await fmtBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
-            await fmtBtn.click({ force: true }).catch(() => {});
-          }
-        }
-
-        const selects = page3.locator('select');
-        const selectCount = await selects.count();
-        for (let i = 0; i < selectCount; i++) {
-          const s = selects.nth(i);
-          const html = await s.innerHTML().catch(() => '');
-          if (html.includes('Pilih Tema') || html.includes('Perlindungan Sosial')) {
-            await s.selectOption({ label: 'Perlindungan Sosial dan Kesehatan' }).catch(async () => {
-              await s.selectOption({ index: 4 }).catch(() => {});
-            });
-          } else if (html.includes('Pilih Jenis Data') || html.includes('Data Induk')) {
-            await s.selectOption({ label: 'Data Induk' }).catch(async () => {
-              await s.selectOption({ index: 4 }).catch(() => {});
-            });
-          } else if (html.includes('Pilih Frekuensi') || html.includes('Tahunan')) {
-            await s.selectOption({ label: 'Bulanan' }).catch(async () => {
-              await s.selectOption({ index: 4 }).catch(() => {});
-            });
-          } else if (html.includes('Dampak minimal') || html.includes('rendah')) {
-            await s.selectOption({ value: 'sedang' }).catch(async () => {
-              await s.selectOption({ index: 2 }).catch(() => {});
-            });
-          }
-        }
-        await page3.waitForTimeout(500);
-
-        const nextBtn1 = page3.locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 2"), button:has-text("Lanjut")').first();
-        if (await nextBtn1.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nextBtn1.click({ force: true });
-          await page3.waitForTimeout(1500);
-        }
-
-        // Step 2: Tambah Entitas
-        const addEntitasBtn = page3.locator('#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")').first();
-        if (await addEntitasBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await addEntitasBtn.click({ force: true });
-          const dialog = page3.locator('[role="dialog"]').first();
-          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
-            const entName = dialog.locator('input').first();
-            if (await entName.isVisible()) await entName.fill('Entitas Profil Kependudukan');
-            const entDesc = dialog.locator('textarea').first();
-            if (await entDesc.isVisible()) await entDesc.fill('Struktur data agregasi penduduk daerah.');
-            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
-            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
-            await page3.waitForTimeout(1000);
-          }
-        }
-
-        const nextBtn2 = page3.locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 3"), button:has-text("Lanjut")').first();
-        if (await nextBtn2.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await nextBtn2.click({ force: true });
-          await page3.waitForTimeout(1500);
-        }
-
-        // Step 3: Tambah Kamus Data
-        const addElemBtn = page3.locator('#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")').first();
-        if (await addElemBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await addElemBtn.click({ force: true });
-          const dialog = page3.locator('[role="dialog"]').first();
-          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
-            const inputs = dialog.locator('input');
-            const inCount = await inputs.count();
-            if (inCount >= 1) await inputs.nth(0).fill('Nomor Induk Kependudukan');
-            if (inCount >= 2) await inputs.nth(1).fill('nik');
-            if (inCount >= 3) await inputs.nth(2).fill('-');
-            if (inCount >= 4) await inputs.nth(3).fill('16 karakter');
-            const elDesc = dialog.locator('textarea').first();
-            if (await elDesc.isVisible()) await elDesc.fill('Nomor unik identitas penduduk nasional.');
-            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
-            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
-            await page3.waitForTimeout(1000);
-          }
-        }
+        // Step 1 (RegDataset), Step 2 (RegEntitasData), & Step 3 (RegKamusData berdasarkan ID Data)
+        await fillDatasetRegistrationFromExcelPayload(page3, payload, { validateErrors: false });
 
         // Submit Form Registrasi
         const submitBtn = page3.locator(

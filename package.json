@@ -6,6 +6,8 @@
   "main": "src/cli.ts",
   "scripts": {
     "start": "tsx src/cli.ts",
+    "insert:excel": "tsx src/flows/register-kemenpora-mtn-flow.ts",
+    "insert:excel:all": "tsx src/flows/register-kemenpora-mtn-flow.ts --all",
     "check:pages": "tsx src/flows/verify-page-access.ts",
     "check:terbatas": "tsx src/flows/verify-page-access.ts --terbatas",
     "check:tertutup": "tsx src/flows/verify-page-access.ts --tertutup",

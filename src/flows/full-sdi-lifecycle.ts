@@ -11,6 +11,7 @@ import {
 } from "../utils/id-helper.js";
 import { safeNavigate, sanitizePayload } from "../utils/page-error-guard.js";
 import { resolveInstansiContext, selectStrictInstansi } from "../utils/instansi-helper.js";
+import { fillDatasetRegistrationFromExcelPayload } from "../generators/kemenpora-excel-loader.js";
 
 const BASE_URL = (process.env.BASE_URL || "https://fe-staging.data.go.id").replace(/\/$/, "");
 
@@ -185,127 +186,19 @@ export async function runModuleC(
   );
   await page.waitForTimeout(2500);
 
-  // Step 1: Informasi Dataset
+  // Step 1 (RegDataset), Step 2 (RegEntitasData), & Step 3 (RegKamusData - Semua Elemen berdasarkan ID Data)
   await dismissUnexpectedPopups(page, logger, mod);
-  const descInput = page
-    .locator("#input-dataset-step1-deskripsi, #field-step1-deskripsi textarea")
-    .first();
-  if (await descInput.isVisible()) {
-    await descInput.fill(ds.step1Informasi.deskripsi.slice(0, 255));
-    logger.markSuccess(
-      logger.logProgress(
-        mod,
-        "FILL_INPUT",
-        "#field-step1-deskripsi",
-        "Mengisi Deskripsi Dataset",
-      ),
-      "Deskripsi terisi",
-    );
-  }
-
-  const nextBtn = page
-    .locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 2")')
-    .first();
-  if (await nextBtn.isVisible()) {
-    await nextBtn.click();
-    logger.markSuccess(
-      logger.logProgress(
-        mod,
-        "CLICK_BUTTON",
-        "#button-dataset-next-step",
-        "Lanjut Langkah 2",
-      ),
-      "Draft Step 1 tersimpan",
-    );
-  }
-
-  // Step 2: Entitas Data
-  await page.waitForTimeout(500);
-  await dismissUnexpectedPopups(page, logger, mod);
-  const addEntitasBtn = page
-    .locator(
-      '#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")',
-    )
-    .first();
-  if (await addEntitasBtn.isVisible()) {
-    await addEntitasBtn.click();
-    const entModal = page.locator('[role="dialog"]');
-    if (await entModal.isVisible()) {
-      await entModal
-        .locator("input")
-        .first()
-        .fill(ds.step2Entitas[0].namaEntitas);
-      await entModal
-        .locator("textarea")
-        .first()
-        .fill(ds.step2Entitas[0].definisi);
-      await entModal
-        .locator('button:has-text("Tambah Entitas"), button:has-text("Simpan")')
-        .first()
-        .click();
-      logger.markSuccess(
-        logger.logProgress(
-          mod,
-          "CLICK_BUTTON",
-          "#button-save-entitas",
-          "Simpan Entitas",
-        ),
-        "Entitas berhasil disimpan",
-      );
-    }
-  }
-
-  const nextBtn2 = page
-    .locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 3")')
-    .first();
-  if (await nextBtn2.isVisible()) {
-    await nextBtn2.click();
-    logger.markSuccess(
-      logger.logProgress(
-        mod,
-        "CLICK_BUTTON",
-        "#button-dataset-next-step",
-        "Lanjut Langkah 3",
-      ),
-      "Entitas tersimpan ➔ Masuk Langkah 3",
-    );
-  }
-
-  // Step 3: Kamus Data
-  await page.waitForTimeout(500);
-  await dismissUnexpectedPopups(page, logger, mod);
-  const addElemBtn = page
-    .locator(
-      '#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")',
-    )
-    .first();
-  if (await addElemBtn.isVisible()) {
-    await addElemBtn.click();
-    const elemModal = page.locator('[role="dialog"]');
-    if (await elemModal.isVisible()) {
-      await elemModal
-        .locator("input")
-        .first()
-        .fill(ds.step3KamusData[0].namaElemen);
-      await elemModal
-        .locator("textarea")
-        .first()
-        .fill(ds.step3KamusData[0].definisi);
-      await elemModal
-        .locator('button:has-text("Tambah Elemen"), button:has-text("Simpan")')
-        .first()
-        .click();
-      logger.markSuccess(
-        logger.logProgress(
-          mod,
-          "CLICK_BUTTON",
-          "#button-save-elemen",
-          "Simpan Elemen Kamus Data",
-        ),
-        "Elemen berhasil disimpan",
-      );
-    }
-  }
+  const stepFillIdx = logger.logProgress(
+    mod,
+    "FILL_INPUT",
+    "#dataset-form-step1-3",
+    `Mengisi Step 1 (RegDataset: ${ds.step1Informasi.nama}), Step 2 (RegEntitasData: ${ds.step2Entitas.map((e) => e.namaEntitas).join(', ')}), dan Step 3 (RegKamusData: ${ds.step3KamusData.length} elemen)`
+  );
+  await fillDatasetRegistrationFromExcelPayload(page, safePayload, { validateErrors: false });
+  logger.markSuccess(
+    stepFillIdx,
+    `Step 1–3 terisi lengkap (${ds.step2Entitas.length} entitas, ${ds.step3KamusData.length} elemen kamus data)`
+  );
 
   const submitBtn = page
     .locator(

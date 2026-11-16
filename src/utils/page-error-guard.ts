@@ -75,10 +75,12 @@ export function sanitizePayload(
     }
   };
 
-  // Garansi konsistensi aturan instansi target: HANYA Kemensos atau Kemendagri
+  // Garansi konsistensi aturan instansi target
   result.kebutuhanData.instansiIndikasi = instansiCtx.targetInstansi;
-  result.kebutuhanData.produsenData = instansiCtx.targetProdusenData;
-  result.kebutuhanData.waliData = instansiCtx.targetWaliData;
+  result.kebutuhanData.produsenData =
+    payload?.kebutuhanData?.produsenData || instansiCtx.targetProdusenData;
+  result.kebutuhanData.waliData =
+    payload?.kebutuhanData?.waliData || instansiCtx.targetWaliData;
 
   // Garansi batasan panjang karakter deskripsi maksimal 255 karakter
   if (result.registrasiDataset?.step1Informasi?.deskripsi) {

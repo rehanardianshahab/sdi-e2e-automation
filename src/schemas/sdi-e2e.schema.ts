@@ -9,6 +9,8 @@ export interface KebutuhanDataPayload {
 
 export interface RegistrasiDatasetPayload {
   step1Informasi: {
+    idDataset?: string;
+    idAplikasi?: string;
     nama: string;
     deskripsi: string;
     tema: string;
@@ -27,10 +29,16 @@ export interface RegistrasiDatasetPayload {
     kontak: string;
   };
   step2Entitas: Array<{
+    idData?: string;
+    idDataset?: string;
     namaEntitas: string;
     definisi: string;
+    produsenData?: string;
+    relasiEntitas?: string[];
   }>;
   step3KamusData: Array<{
+    idElemen?: string;
+    idData?: string;
     namaElemen: string;
     namaEntitas: string;
     alias: string;
