@@ -1,0 +1,37 @@
+{
+  "name": "sdi-e2e-automation",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "E2E Automation Testing & Data Seeding for Satu Data Indonesia (SDI) with Playwright & Gemini AI",
+  "main": "src/cli.ts",
+  "scripts": {
+    "start": "tsx src/cli.ts",
+    "check:pages": "tsx src/flows/verify-page-access.ts",
+    "check:terbatas": "tsx src/flows/verify-page-access.ts --terbatas",
+    "check:tertutup": "tsx src/flows/verify-page-access.ts --tertutup",
+    "check:revisi": "tsx src/flows/verify-page-access.ts --revisi",
+    "check:layanan": "tsx src/flows/verify-page-access.ts --layanan",
+    "check:all": "tsx src/flows/verify-page-access.ts --all",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "report:open": "start reports/dashboard.html",
+    "report:web": "tsx src/utils/generate-web-report.ts && start reports/dashboard.html",
+    "detect:errors": "tsx src/utils/ai-error-detector.ts",
+    "qa:flow": "tsx scripts/qa-flow-comparator.ts",
+    "qa:doc": "tsx -e \"import('./scripts/qa-flow-comparator.js').then(m => { import('fs').then(fs => { fs.writeFileSync('QA-FLOW-SPECIFICATION.md', m.generateQAMarkdownDoc()); m.generateQAComparisonHTML(); console.log('Dokumen QA berhasil dibuat.'); }); })\""
+  },
+  "dependencies": {
+    "@google/genai": "^3.3.0",
+    "@inquirer/prompts": "^7.1.0",
+    "dotenv": "^16.4.7",
+    "playwright": "^1.49.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}
