@@ -128,8 +128,8 @@ export async function performLogin(
   );
 
   await safeNavigate(page, `${BASE_URL}/login`, undefined, moduleCode, {
-    waitUntil: 'networkidle',
-    timeoutMs: 25000
+    waitUntil: 'domcontentloaded',
+    timeoutMs: 45000
   });
   await page.waitForTimeout(1000);
 

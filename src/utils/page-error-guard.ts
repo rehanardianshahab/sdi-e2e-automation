@@ -340,60 +340,74 @@ export async function safeNavigate(
     stepIndex = logger.logProgress(moduleCode, 'NAVIGATE', '#safe-nav', desc);
   }
 
-  try {
-    // Jeda 2 - 4 detik sebelum pindah halaman
-    const navPause = getRandomDelay(2, 4);
-    await page.waitForTimeout(navPause);
+  let lastErr: any;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      // Jeda 2 - 4 detik sebelum pindah halaman (atau jeda retry)
+      const navPause = attempt === 1 ? getRandomDelay(2, 3) : 3000;
+      await page.waitForTimeout(navPause);
 
-    await page.goto(targetUrl, {
-      waitUntil,
-      timeout: timeoutMs
-    });
+      await page.goto(targetUrl, {
+        waitUntil,
+        timeout: timeoutMs
+      });
 
-    if (logger && stepIndex !== undefined) {
-      logger.markSuccess(stepIndex, `Halaman berhasil dimuat (${waitUntil}) ➔ Lanjut`);
-    }
-    return true;
-  } catch (err: any) {
-    if (err.message.includes('Timeout') && waitUntil !== 'domcontentloaded') {
-      try {
-        await page.goto(targetUrl, {
-          waitUntil: 'domcontentloaded',
-          timeout: 10000
-        });
-        if (logger && stepIndex !== undefined) {
-          logger.markSuccess(
-            stepIndex,
-            `Halaman dimuat via fallback (domcontentloaded) ➔ Lanjut`
-          );
+      if (logger && stepIndex !== undefined) {
+        logger.markSuccess(stepIndex, `Halaman berhasil dimuat (${waitUntil}${attempt > 1 ? `, attempt ${attempt}` : ''}) ➔ Lanjut`);
+      }
+      return true;
+    } catch (err: any) {
+      lastErr = err;
+      if (err.message.includes('Timeout') || err.message.includes('ERR_TIMED_OUT')) {
+        if (attempt < 3) {
+          console.warn(`[safeNavigate] Percobaan ${attempt} ke ${targetUrl} mengalami timeout, mencoba kembali...`);
+          continue;
         }
-        return true;
-      } catch (fallbackErr: any) {
-        if (routePolicy?.skipIfUnavailable) {
-          if (logger && stepIndex !== undefined) {
-            logger.markSuccess(
-              stepIndex,
-              `Halaman opsional dilewati karena tidak tersedia (${fallbackErr.message.slice(0, 30)}...)`
-            );
-          }
-          return false;
-        }
-        throw fallbackErr;
+      } else {
+        break;
       }
     }
+  }
 
-    if (routePolicy?.skipIfUnavailable) {
+  const err = lastErr;
+  if (err && (err.message.includes('Timeout') || err.message.includes('ERR_TIMED_OUT')) && waitUntil !== 'domcontentloaded') {
+    try {
+      await page.goto(targetUrl, {
+        waitUntil: 'domcontentloaded',
+        timeout: 20000
+      });
       if (logger && stepIndex !== undefined) {
         logger.markSuccess(
           stepIndex,
-          `Halaman opsional dilewati (${err.message.slice(0, 30)}...)`
+          `Halaman dimuat via fallback (domcontentloaded) ➔ Lanjut`
         );
       }
-      return false;
+      return true;
+    } catch (fallbackErr: any) {
+      if (routePolicy?.skipIfUnavailable) {
+        if (logger && stepIndex !== undefined) {
+          logger.markSuccess(
+            stepIndex,
+            `Halaman opsional dilewati karena tidak tersedia (${fallbackErr.message.slice(0, 30)}...)`
+          );
+        }
+        return false;
+      }
+      throw fallbackErr;
     }
-
-    throw err;
   }
+
+  if (routePolicy?.skipIfUnavailable) {
+    if (logger && stepIndex !== undefined) {
+      logger.markSuccess(
+        stepIndex,
+        `Halaman opsional dilewati (${err?.message?.slice(0, 30) || 'unknown'}...)`
+      );
+    }
+    return false;
+  }
+
+  throw err;
 }
 
 /**

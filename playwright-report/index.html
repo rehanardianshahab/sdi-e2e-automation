@@ -31,9 +31,9 @@
     </div>
     <div class="meta-cards">
       <div class="card"><div class="card-label">Target Base URL</div><div class="card-val">https://fe-staging.data.go.id</div></div>
-      <div class="card"><div class="card-label">Instansi Pengusul</div><div class="card-val">Kementerian Sosial (Kemensos)</div></div>
-      <div class="card"><div class="card-label">Instansi Target</div><div class="card-val">KEMENTERIAN DALAM NEGERI</div></div>
-      <div class="card"><div class="card-label">Total Checkpoint</div><div class="card-val">12 Langkah Berhasil</div></div>
+      <div class="card"><div class="card-label">Instansi Pengusul</div><div class="card-val">Kementerian Dalam Negeri (Kemendagri)</div></div>
+      <div class="card"><div class="card-label">Instansi Target</div><div class="card-val">KEMENTERIAN PEMUDA DAN OLAHRAGA</div></div>
+      <div class="card"><div class="card-label">Total Checkpoint</div><div class="card-val">6 Langkah Berhasil</div></div>
     </div>
     <table>
       <thead>
@@ -52,15 +52,15 @@
             <td><strong>#1</strong></td>
             <td><strong>Halaman Login & Autentikasi</strong></td>
             <td><span class="url-tag">https://fe-staging.data.go.id/dashboard</span></td>
-            <td>16533 ms</td>
+            <td>16477 ms</td>
             <td><span class="badge-success">SUCCESS</span></td>
-            <td>Login berhasil sebagai exchange@test.kemensos.go.id (Elemen profil/role aktif terdeteksi di navbar)</td>
+            <td>Login berhasil sebagai exchange@test.kemendagri.go.id (Elemen profil/role aktif terdeteksi di navbar)</td>
           </tr>
           <tr>
             <td><strong>#2</strong></td>
             <td><strong>Halaman Kebutuhan Data</strong></td>
             <td><span class="url-tag">https://fe-staging.data.go.id/perencanaan/kebutuhan-data</span></td>
-            <td>4819 ms</td>
+            <td>3509 ms</td>
             <td><span class="badge-success">SUCCESS</span></td>
             <td>Halaman /perencanaan/kebutuhan-data terbuka dan tombol Ajukan Kebutuhan siap</td>
           </tr>
@@ -68,79 +68,31 @@
             <td><strong>#3</strong></td>
             <td><strong>Tambah Kebutuhan Data (Pengusul)</strong></td>
             <td><span class="url-tag">https://fe-staging.data.go.id/perencanaan/kebutuhan-data</span></td>
-            <td>4073 ms</td>
+            <td>9196 ms</td>
             <td><span class="badge-success">SUCCESS</span></td>
-            <td>Semua field kebutuhan data terisi lengkap & bebas validation error. Usulan diajukan: "Data Kependudukan Terpadu untuk Bantuan Sosial dan Kemiskinan Ekstrem [23:01:03]" (Status: Diajukan).</td>
+            <td>Semua field kebutuhan data terisi lengkap & bebas validation error. Usulan diajukan: "Data Terpadu Capaian Indeks Pembangunan Pemuda dan Prestasi Olahraga Daerah [02:06:46]" (Status: Diajukan).</td>
           </tr>
           <tr>
             <td><strong>#4</strong></td>
             <td><strong>Konfirmasi Kebutuhan Data oleh Sekretariat</strong></td>
             <td><span class="url-tag">https://fe-staging.data.go.id/perencanaan/kebutuhan-data</span></td>
-            <td>27386 ms</td>
+            <td>24555 ms</td>
             <td><span class="badge-success">SUCCESS</span></td>
             <td>Sekretariat (Mkalmunawar@gmail.com) mengonfirmasi usulan bebas validation error ➔ Status: Dapat Disediakan.</td>
           </tr>
           <tr>
             <td><strong>#5</strong></td>
             <td><strong>Registrasi Dataset Inline (Step 1 s.d. Step 3)</strong></td>
-            <td><span class="url-tag">https://fe-staging.data.go.id/dataset-form/status/6b400882-3dff-4b24-99c8-ce5d7c7cb555?idUsulan=10c4e4a5-da70-4920-a580-b48361901b3a</span></td>
-            <td>39371 ms</td>
+            <td><span class="url-tag">https://fe-staging.data.go.id/dataset-form/status/a2187209-95f1-4f30-b0be-e5e8821283e9?idUsulan=d2ecbbfc-d01a-44d9-964f-5b9a95e9a9b5</span></td>
+            <td>37055 ms</td>
             <td><span class="badge-success">SUCCESS</span></td>
-            <td>Registrasi Dataset Step 1-3 terisi lengkap, disetujui & berhasil dikirim (https://fe-staging.data.go.id/dataset-form/status/6b400882-3dff-4b24-99c8-ce5d7c7cb555?idUsulan=10c4e4a5-da70-4920-a580-b48361901b3a).</td>
+            <td>Registrasi Dataset Step 1-3 terisi lengkap, disetujui & berhasil dikirim (https://fe-staging.data.go.id/dataset-form/status/a2187209-95f1-4f30-b0be-e5e8821283e9?idUsulan=d2ecbbfc-d01a-44d9-964f-5b9a95e9a9b5).</td>
           </tr>
           <tr>
             <td><strong>#6</strong></td>
             <td><strong>Review & Persetujuan Registrasi Dataset oleh Sekretariat</strong></td>
             <td><span class="url-tag">https://fe-staging.data.go.id/perencanaan/kebutuhan-data</span></td>
-            <td>32129 ms</td>
-            <td><span class="badge-success">SUCCESS</span></td>
-            <td>Sekretariat berhasil mereview Step 1-3 & menyetujui dataset menjadi Published (https://fe-staging.data.go.id/registrasi/data).</td>
-          </tr>
-          <tr>
-            <td><strong>#1</strong></td>
-            <td><strong>Halaman Login & Autentikasi</strong></td>
-            <td><span class="url-tag">https://fe-staging.data.go.id/dashboard</span></td>
-            <td>15262 ms</td>
-            <td><span class="badge-success">SUCCESS</span></td>
-            <td>Login berhasil sebagai exchange@test.kemensos.go.id (Elemen profil/role aktif terdeteksi di navbar)</td>
-          </tr>
-          <tr>
-            <td><strong>#2</strong></td>
-            <td><strong>Halaman Kebutuhan Data</strong></td>
-            <td><span class="url-tag">https://fe-staging.data.go.id/perencanaan/kebutuhan-data</span></td>
-            <td>4535 ms</td>
-            <td><span class="badge-success">SUCCESS</span></td>
-            <td>Halaman /perencanaan/kebutuhan-data terbuka dan tombol Ajukan Kebutuhan siap</td>
-          </tr>
-          <tr>
-            <td><strong>#3</strong></td>
-            <td><strong>Tambah Kebutuhan Data (Pengusul)</strong></td>
-            <td><span class="url-tag">https://fe-staging.data.go.id/perencanaan/kebutuhan-data</span></td>
-            <td>3944 ms</td>
-            <td><span class="badge-success">SUCCESS</span></td>
-            <td>Semua field kebutuhan data terisi lengkap & bebas validation error. Usulan diajukan: "Data Kependudukan Agregat Terpadu Kemiskinan Ekstrem [23:03:41]" (Status: Diajukan).</td>
-          </tr>
-          <tr>
-            <td><strong>#4</strong></td>
-            <td><strong>Konfirmasi Kebutuhan Data oleh Sekretariat</strong></td>
-            <td><span class="url-tag">https://fe-staging.data.go.id/perencanaan/kebutuhan-data</span></td>
-            <td>28297 ms</td>
-            <td><span class="badge-success">SUCCESS</span></td>
-            <td>Sekretariat (Mkalmunawar@gmail.com) mengonfirmasi usulan bebas validation error ➔ Status: Dapat Disediakan.</td>
-          </tr>
-          <tr>
-            <td><strong>#5</strong></td>
-            <td><strong>Registrasi Dataset Inline (Step 1 s.d. Step 3)</strong></td>
-            <td><span class="url-tag">https://fe-staging.data.go.id/dataset-form/status/7d0256ae-60ec-4369-bd54-5c146fe00cfa?idUsulan=f38edc38-6bea-4fdc-82d0-3873d77e2692</span></td>
-            <td>39003 ms</td>
-            <td><span class="badge-success">SUCCESS</span></td>
-            <td>Registrasi Dataset Step 1-3 terisi lengkap, disetujui & berhasil dikirim (https://fe-staging.data.go.id/dataset-form/status/7d0256ae-60ec-4369-bd54-5c146fe00cfa?idUsulan=f38edc38-6bea-4fdc-82d0-3873d77e2692).</td>
-          </tr>
-          <tr>
-            <td><strong>#6</strong></td>
-            <td><strong>Review & Persetujuan Registrasi Dataset oleh Sekretariat</strong></td>
-            <td><span class="url-tag">https://fe-staging.data.go.id/perencanaan/kebutuhan-data</span></td>
-            <td>31590 ms</td>
+            <td>30209 ms</td>
             <td><span class="badge-success">SUCCESS</span></td>
             <td>Sekretariat berhasil mereview Step 1-3 & menyetujui dataset menjadi Published (https://fe-staging.data.go.id/registrasi/data).</td>
           </tr>

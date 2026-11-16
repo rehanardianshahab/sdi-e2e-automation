@@ -125,9 +125,9 @@ export async function selectStrictInstansi(
 
   // Buka dropdown
   await trigger.click();
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(1000);
 
-  const searchInput = page.locator('#input-kebutuhan-form-instansi-search');
+  const searchInput = page.locator('#input-kebutuhan-form-instansi-search, input[placeholder*="Cari" i]').first();
   const isSearchAvailable = await searchInput.isVisible({ timeout: 2500 }).catch(() => false);
 
   let optionFound = false;
@@ -135,16 +135,41 @@ export async function selectStrictInstansi(
 
   if (isSearchAvailable) {
     const searchTerms = [
+      'PEMUDA DAN OLAHRAGA',
       instansiCtx.targetInstansi,
-      instansiCtx.targetKeywords[0],
-      instansiCtx.targetKeywords[1] || instansiCtx.targetInstansi
+      ...instansiCtx.targetKeywords
     ];
+    // Ambil distinct terms
+    const distinctTerms = Array.from(new Set(searchTerms)).filter(Boolean);
 
-    for (const term of searchTerms) {
+    for (const term of distinctTerms) {
       if (optionFound) break;
       await searchInput.fill('');
+      await page.waitForTimeout(300);
       await searchInput.fill(term);
-      await page.waitForTimeout(500);
+      await searchInput.dispatchEvent('input').catch(() => {});
+
+      // Tunggu 1 - 2 detik setelah mengetik sesuai kebutuhan debounce & pencarian portal
+      await page.waitForTimeout(2000);
+
+      // Cek langsung locator opsi target yang cocok
+      const targetOption = page
+        .locator('[role="option"], [id^="button-kebutuhan-form-instansi-item-"]')
+        .filter({
+          hasText: new RegExp(
+            instansiCtx.targetKeywords.join('|') || instansiCtx.targetInstansi,
+            'i'
+          )
+        })
+        .first();
+
+      if (await targetOption.isVisible({ timeout: 2500 }).catch(() => false)) {
+        selectedOptionText = (await targetOption.innerText().catch(() => '')).trim();
+        await targetOption.scrollIntoViewIfNeeded().catch(() => {});
+        await targetOption.click({ force: true });
+        optionFound = true;
+        break;
+      }
 
       const options = page.locator('[role="option"], [id^="button-kebutuhan-form-instansi-item-"]');
       const count = await options.count().catch(() => 0);
@@ -158,14 +183,7 @@ export async function selectStrictInstansi(
             optText.toUpperCase().includes(k.toUpperCase())
           ) || optText.toUpperCase().includes(instansiCtx.targetInstansi.toUpperCase());
 
-        const isForbidden =
-          !optText.toUpperCase().includes('PEMUDA') &&
-          !optText.toUpperCase().includes('OLAHRAGA') &&
-          !optText.toUpperCase().includes('KEMENPORA') &&
-          !optText.toUpperCase().includes('DALAM NEGERI') &&
-          !optText.toUpperCase().includes('KEMENDAGRI');
-
-        if (matchesTarget && !isForbidden) {
+        if (matchesTarget) {
           await opt.scrollIntoViewIfNeeded().catch(() => {});
           await opt.click({ force: true });
           optionFound = true;
@@ -175,29 +193,41 @@ export async function selectStrictInstansi(
       }
     }
   } else {
-    const options = page.locator('[role="option"], [id^="button-kebutuhan-form-instansi-item-"]');
-    const count = await options.count().catch(() => 0);
-    for (let i = 0; i < count; i++) {
-      const opt = options.nth(i);
-      const optText = (await opt.innerText().catch(() => '')).trim();
+    // Dropdown tanpa search input: cari langsung di list opsi
+    await page.waitForTimeout(1500);
+    const targetOption = page
+      .locator('[role="option"], [id^="button-kebutuhan-form-instansi-item-"]')
+      .filter({
+        hasText: new RegExp(
+          instansiCtx.targetKeywords.join('|') || instansiCtx.targetInstansi,
+          'i'
+        )
+      })
+      .first();
 
-      const matchesTarget = instansiCtx.targetKeywords.some((k) =>
-        optText.toUpperCase().includes(k.toUpperCase())
-      );
+    if (await targetOption.isVisible({ timeout: 3000 }).catch(() => false)) {
+      selectedOptionText = (await targetOption.innerText().catch(() => '')).trim();
+      await targetOption.scrollIntoViewIfNeeded().catch(() => {});
+      await targetOption.click({ force: true });
+      optionFound = true;
+    } else {
+      const options = page.locator('[role="option"], [id^="button-kebutuhan-form-instansi-item-"]');
+      const count = await options.count().catch(() => 0);
+      for (let i = 0; i < count; i++) {
+        const opt = options.nth(i);
+        const optText = (await opt.innerText().catch(() => '')).trim();
 
-      const isForbidden =
-        !optText.toUpperCase().includes('PEMUDA') &&
-        !optText.toUpperCase().includes('OLAHRAGA') &&
-        !optText.toUpperCase().includes('KEMENPORA') &&
-        !optText.toUpperCase().includes('DALAM NEGERI') &&
-        !optText.toUpperCase().includes('KEMENDAGRI');
+        const matchesTarget = instansiCtx.targetKeywords.some((k) =>
+          optText.toUpperCase().includes(k.toUpperCase())
+        );
 
-      if (matchesTarget && !isForbidden) {
-        await opt.scrollIntoViewIfNeeded().catch(() => {});
-        await opt.click({ force: true });
-        optionFound = true;
-        selectedOptionText = optText;
-        break;
+        if (matchesTarget) {
+          await opt.scrollIntoViewIfNeeded().catch(() => {});
+          await opt.click({ force: true });
+          optionFound = true;
+          selectedOptionText = optText;
+          break;
+        }
       }
     }
   }
@@ -209,7 +239,7 @@ export async function selectStrictInstansi(
     );
   }
 
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(1000);
 
   // Verifikasi akhir
   const verifiedText = (await trigger.innerText().catch(() => '')).trim();
