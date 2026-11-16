@@ -2,206 +2,30 @@ import { chromium, Page } from 'playwright';
 import { performLogin } from '../pages/auth.page.js';
 import { safeNavigate, assertNoValidationErrors, safeDismissUnexpectedPopups } from '../utils/page-error-guard.js';
 import { StepLogger } from '../utils/step-logger.js';
-import { resolveInstansiContext } from '../utils/instansi-helper.js';
+import { resolveInstansiContext, selectStrictInstansi } from '../utils/instansi-helper.js';
+import { kemenpora14Entities, kemenpora99KamusElements } from '../generators/kemenpora-mtn-data.js';
 
-export interface KamusDataElement {
-  idElemen: string;
-  namaElemen: string;
-  alias: string;
-  definisi: string;
-  satuan: string;
-  tipeData: string;
-  formatPanjang: string;
-  sifatKewajiban: 'Mandatory' | 'Optional';
-  isPrimaryKey?: boolean;
-}
-
-// 16 Elemen Kamus Data untuk DS-PORA-001 / DT-PORA-001 (olahragawan) dari B4. RegKamusData.csv
-export const kemenporaKamusDataDS001: KamusDataElement[] = [
-  {
-    idElemen: 'DE-PORA-001',
-    namaElemen: 'id_olahragawan',
-    alias: 'id_olahragawan',
-    definisi: 'ID unik data talenta olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '50',
-    sifatKewajiban: 'Optional',
-    isPrimaryKey: true
-  },
-  {
-    idElemen: 'DE-PORA-002',
-    namaElemen: 'nik',
-    alias: 'nik',
-    definisi: 'Nomor Induk Kependudukan olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '21',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-003',
-    namaElemen: 'nisn',
-    alias: 'nisn',
-    definisi: 'Nomor Induk Siswa Nasional olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '255',
-    sifatKewajiban: 'Optional'
-  },
-  {
-    idElemen: 'DE-PORA-004',
-    namaElemen: 'id_asal',
-    alias: 'id_asal',
-    definisi: 'Asal Daerah Olahragawan',
-    satuan: '-',
-    tipeData: 'int',
-    formatPanjang: '20',
-    sifatKewajiban: 'Optional'
-  },
-  {
-    idElemen: 'DE-PORA-005',
-    namaElemen: 'nama_lengkap',
-    alias: 'nama_lengkap',
-    definisi: 'Nama lengkap Olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '100',
-    sifatKewajiban: 'Optional'
-  },
-  {
-    idElemen: 'DE-PORA-006',
-    namaElemen: 'nama_depan',
-    alias: 'nama_depan',
-    definisi: 'Nama Depan Olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '100',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-007',
-    namaElemen: 'nama_belakang',
-    alias: 'nama_belakang',
-    definisi: 'Nama belakang Olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '100',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-008',
-    namaElemen: 'jenis_kelamin',
-    alias: 'jenis_kelamin',
-    definisi: 'Jenis kelamin olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '4',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-009',
-    namaElemen: 'provinsi',
-    alias: 'provinsi',
-    definisi: 'Asal Provinsi Olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '100',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-010',
-    namaElemen: 'alamat',
-    alias: 'alamat',
-    definisi: 'Alamat lengkap olahragawan berdasarkan KTP',
-    satuan: '-',
-    tipeData: 'text',
-    formatPanjang: '255',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-011',
-    namaElemen: 'alamat_domisili',
-    alias: 'alamat_domisili',
-    definisi: 'Alamat tempat tinggal domisili olahragawan saat ini',
-    satuan: '-',
-    tipeData: 'text',
-    formatPanjang: '255',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-012',
-    namaElemen: 'tempat_lahir',
-    alias: 'tempat_lahir',
-    definisi: 'Tempat kelahiran olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '100',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-013',
-    namaElemen: 'tanggal_lahir',
-    alias: 'tanggal_lahir',
-    definisi: 'Tanggal lahir olahragawan',
-    satuan: '-',
-    tipeData: 'date',
-    formatPanjang: '10',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-014',
-    namaElemen: 'status_disabilitas',
-    alias: 'status_disabilitas',
-    definisi: 'Status apakah olahragawan penyandang disabilitas',
-    satuan: '-',
-    tipeData: 'tinyint',
-    formatPanjang: '1',
-    sifatKewajiban: 'Optional'
-  },
-  {
-    idElemen: 'DE-PORA-015',
-    namaElemen: 'foto',
-    alias: 'foto',
-    definisi: 'URL tautan foto resmi olahragawan',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '255',
-    sifatKewajiban: 'Mandatory'
-  },
-  {
-    idElemen: 'DE-PORA-016',
-    namaElemen: 'status',
-    alias: 'status',
-    definisi: 'Status keaktifan olahragawan nasional',
-    satuan: '-',
-    tipeData: 'varchar',
-    formatPanjang: '4',
-    sifatKewajiban: 'Mandatory'
-  }
-];
-
-export async function runRegisterKemenporaMTNFlow() {
-  const browser = await chromium.launch({ headless: true, slowMo: 100 });
+export async function runRegisterKemenporaRelationalFlow() {
+  const browser = await chromium.launch({ headless: true, slowMo: 50 });
   const BASE_URL = process.env.BASE_URL || 'https://fe-staging.data.go.id';
-  const logger = new StepLogger(['INIT', 'A', 'B', 'C'], 'RegKemenporaMTN');
+  const logger = new StepLogger(['INIT', 'A', 'B', 'C'], 'RegKemenporaRelasi');
   const instansiCtx = resolveInstansiContext('exchange@test.kemendagri.go.id');
   const pengusulEmail = instansiCtx.loginEmail;
   const pengusulPassword = process.env.USER_PENGUSUL_PASSWORD || '123456789';
   const targetEmail = instansiCtx.targetLoginEmail;
   const targetPassword = instansiCtx.targetLoginPassword;
 
-  console.log('╔══════════════════════════════════════════════════════════════════════════════╗');
-  console.log('║       REGISTRASI DATA KEMENPORA MTN: DATASET ➔ ENTITAS ➔ 16 KAMUS DATA       ║');
-  console.log('╚══════════════════════════════════════════════════════════════════════════════╝');
-  console.log(`Pengusul: ${instansiCtx.loginInstansiName} (${pengusulEmail})`);
-  console.log(`Target  : ${instansiCtx.targetInstansi} (${targetEmail})`);
-  console.log(`Dataset : DS-PORA-001 (olahragawan)`);
-  console.log(`Kamus   : 16 Elemen Data Lengkap\n`);
+  console.log('╔════════════════════════════════════════════════════════════════════════════════════════╗');
+  console.log('║     REGISTRASI DATASET KEMENPORA MTN SKEMA RELASIONAL: 14 ENTITAS & 106 KAMUS DATA     ║');
+  console.log('╚════════════════════════════════════════════════════════════════════════════════════════╝');
+  console.log(`Pengusul : ${instansiCtx.loginInstansiName} (${pengusulEmail})`);
+  console.log(`Target   : ${instansiCtx.targetInstansi} (${targetEmail})`);
+  console.log(`Entitas  : ${kemenpora14Entities.length} Entitas Terelasi`);
+  console.log(`Kamus    : ${kemenpora99KamusElements.length} Elemen Kamus Data Lengkap\n`);
 
   try {
     const timestamp = Date.now();
-    const namaDatasetUsulan = `olahragawan - Data Olahragawan dan Talenta Keolahragaan Nasional [${timestamp}]`;
+    const namaDatasetUsulan = `Data Terpadu Olahragawan dan Manajemen Talenta Keolahragaan Nasional (DS-PORA-001 Klaster Relasi) [${timestamp}]`;
 
     // --------------------------------------------------------------------------
     // FASE 1: KEMENDAGRI AJUKAN USULAN KEBUTUHAN DATA KE KEMENPORA
@@ -235,29 +59,13 @@ export async function runRegisterKemenporaMTNFlow() {
     const namaInput = modalDialog.locator('#input-kebutuhan-form-nama, input').first();
     await namaInput.fill(namaDatasetUsulan);
 
-    // Pilih Instansi: KEMENTERIAN PEMUDA DAN OLAHRAGA
-    const instansiTrigger = modalDialog.locator('#button-kebutuhan-form-instansi-trigger, button[role="combobox"]').first();
-    if (await instansiTrigger.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await instansiTrigger.click();
-      await pengusulPage.waitForTimeout(500);
-      const searchBox = pengusulPage.locator('input[placeholder*="Cari" i]').first();
-      if (await searchBox.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await searchBox.fill('PEMUDA DAN OLAHRAGA');
-        await pengusulPage.waitForTimeout(600);
-      }
-      const option = pengusulPage.locator('[role="option"]:has-text("KEMENTERIAN PEMUDA DAN OLAHRAGA")').first();
-      if (await option.isVisible({ timeout: 4000 }).catch(() => false)) {
-        await option.click();
-      } else {
-        const fallbackOpt = pengusulPage.locator('[role="option"]').first();
-        if (await fallbackOpt.isVisible()) await fallbackOpt.click();
-      }
-    }
+    // Pilih Instansi Target secara ketat dengan jeda debounce 2 detik
+    await selectStrictInstansi(pengusulPage, instansiCtx, logger, 'A');
 
     const tujuanInput = modalDialog.locator('#input-kebutuhan-form-tujuan-pengusulan, textarea').first();
     if (await tujuanInput.isVisible()) {
       await tujuanInput.fill(
-        'Registrasi Data Kemenpora MTN (DS-PORA-001) tabel olahragawan untuk pemadanan talenta keolahragaan nasional.'
+        'Registrasi Data Kemenpora MTN (DS-PORA-001) klaster terpadu 14 entitas olahragawan untuk tata kelola Manajemen Talenta Nasional Keolahragaan.'
       );
     }
 
@@ -299,7 +107,7 @@ export async function runRegisterKemenporaMTNFlow() {
     if (await penetapanModal.isVisible({ timeout: 5000 }).catch(() => false)) {
       const catInput = penetapanModal.locator('textarea').first();
       if (await catInput.isVisible()) {
-        await catInput.fill('Ditetapkan untuk registrasi data MTN Kemenpora DS-PORA-001.');
+        await catInput.fill('Ditetapkan untuk registrasi data MTN Kemenpora klaster relasi olahragawan.');
       }
       const confirmBtn = penetapanModal.locator(
         '#button-kebutuhan-detail-dapat-disediakan, button:has-text("Konfirmasi Dapat Disediakan")'
@@ -345,12 +153,14 @@ export async function runRegisterKemenporaMTNFlow() {
     console.log(`   🔗 URL Form Registrasi: ${currentUrl}`);
 
     // ==========================================================================
-    // STEP 1: INFORMASI DATASET (DS-PORA-001)
+    // STEP 1: INFORMASI DATASET
     // ==========================================================================
-    console.log('   ▶ [Step 1] Mengisi Informasi Dataset (olahragawan)...');
+    console.log('   ▶ [Step 1] Mengisi Informasi Dataset...');
     const descInput = kemenporaPage.locator('#input-dataset-step1-deskripsi');
     if (await descInput.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await descInput.fill('Tabel untuk menyimpan data olahragawan'.slice(0, 255));
+      await descInput.fill(
+        'Dataset relasional terpadu MTN Keolahragaan Kemenpora yang menyimpan data olahragawan, pelatih, pembinaan, serta riwayat prestasi dan pengukuran kesehatan nasional.'.slice(0, 255)
+      );
     }
 
     // Klasifikasi Risiko: Terbatas (pastikan aktif)
@@ -361,7 +171,7 @@ export async function runRegisterKemenporaMTNFlow() {
       console.log('      🏷️ Klasifikasi Risiko: Terbatas');
     }
 
-    // Format Data: JSON (pastikan aktif, jangan toggle off jika sudah aktif)
+    // Format Data: JSON (pastikan aktif, jangan toggle off)
     const jsonBtn = kemenporaPage.locator('#button-dataset-step1-format-json');
     const jsonClass = (await jsonBtn.getAttribute('class')) || '';
     if (!jsonClass.includes('emerald') && !jsonClass.includes('primary')) {
@@ -406,28 +216,36 @@ export async function runRegisterKemenporaMTNFlow() {
     console.log('   ✅ Step 1 berhasil disimpan.');
 
     // ==========================================================================
-    // STEP 2: ENTITAS DATA (DT-PORA-001)
+    // STEP 2: MULTI-ENTITAS DATA (14 ENTITAS TERELASI)
     // ==========================================================================
-    console.log('   ▶ [Step 2] Menambahkan Entitas Data (olahragawan)...');
-    const addEntitasBtn = kemenporaPage.locator(
-      '#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")'
-    ).first();
-    await addEntitasBtn.waitFor({ state: 'visible', timeout: 10000 });
-    await addEntitasBtn.click({ force: true });
-    await kemenporaPage.waitForTimeout(1000);
+    console.log(`   ▶ [Step 2] Menambahkan ${kemenpora14Entities.length} Entitas Data Terelasi...`);
 
-    const entDialog = kemenporaPage.locator('[role="dialog"]').first();
-    await entDialog.waitFor({ state: 'visible', timeout: 5000 });
+    for (let i = 0; i < kemenpora14Entities.length; i++) {
+      const ent = kemenpora14Entities[i];
+      console.log(`      [${i + 1}/${kemenpora14Entities.length}] Menambahkan entitas "${ent.namaEntitas}"...`);
 
-    await entDialog.locator('#input-dataset-step2-nama-entitas').fill('olahragawan');
-    await entDialog.locator('#input-dataset-step2-definisi-entitas').fill('Tabel untuk menyimpan data olahragawan'.slice(0, 255));
+      const addEntitasBtn = kemenporaPage.locator(
+        '#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")'
+      ).first();
+      await addEntitasBtn.waitFor({ state: 'visible', timeout: 10000 });
+      await addEntitasBtn.click({ force: true });
+      await kemenporaPage.waitForTimeout(800);
 
-    await assertNoValidationErrors(kemenporaPage, 'Modal Tambah Entitas Step 2');
-    const saveEntBtn = entDialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
-    await saveEntBtn.click({ force: true });
-    await kemenporaPage.waitForTimeout(1500);
+      const entDialog = kemenporaPage.locator('[role="dialog"]').first();
+      await entDialog.waitFor({ state: 'visible', timeout: 5000 });
 
+      await entDialog.locator('#input-dataset-step2-nama-entitas').fill(ent.namaEntitas);
+      await entDialog.locator('#input-dataset-step2-definisi-entitas').fill(ent.definisi.slice(0, 255));
+
+      await assertNoValidationErrors(kemenporaPage, `Modal Entitas [${ent.namaEntitas}]`);
+      const saveEntBtn = entDialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
+      await saveEntBtn.click({ force: true });
+      await kemenporaPage.waitForTimeout(1000);
+    }
+
+    console.log(`   ✅ Seluruh ${kemenpora14Entities.length} entitas berhasil didaftarkan di Langkah 2.`);
     await assertNoValidationErrors(kemenporaPage, 'Registrasi Dataset Step 2');
+
     const nextBtn2 = kemenporaPage.locator('#button-dataset-next-step').first();
     await nextBtn2.waitFor({ state: 'visible', timeout: 5000 });
     await nextBtn2.click({ force: true });
@@ -435,23 +253,40 @@ export async function runRegisterKemenporaMTNFlow() {
     console.log('   ✅ Step 2 berhasil disimpan.');
 
     // ==========================================================================
-    // STEP 3: KAMUS DATA (16 ELEMEN LENGKAP B4. RegKamusData.csv)
+    // STEP 3: MULTI-KAMUS DATA (106 ELEMEN LENGKAP B4. RegKamusData.csv)
     // ==========================================================================
-    console.log(`   ▶ [Step 3] Menambahkan 16 Elemen Kamus Data 1 per 1...`);
+    console.log(`   ▶ [Step 3] Menambahkan ${kemenpora99KamusElements.length} Elemen Kamus Data Terelasi 1 per 1...`);
 
-    for (let i = 0; i < kemenporaKamusDataDS001.length; i++) {
-      const elem = kemenporaKamusDataDS001[i];
-      console.log(`      [${i + 1}/16] Menambahkan elemen "${elem.namaElemen}" (${elem.tipeData}, ${elem.sifatKewajiban})...`);
+    for (let i = 0; i < kemenpora99KamusElements.length; i++) {
+      const elem = kemenpora99KamusElements[i];
+      if ((i + 1) % 10 === 0 || i === 0 || i === kemenpora99KamusElements.length - 1) {
+        console.log(`      [${i + 1}/${kemenpora99KamusElements.length}] Memproses elemen "${elem.namaElemen}" [${elem.namaEntitas}] (${elem.tipeData})...`);
+      }
 
       const addElemBtn = kemenporaPage.locator(
         '#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")'
       ).first();
       await addElemBtn.waitFor({ state: 'visible', timeout: 8000 });
       await addElemBtn.click({ force: true });
-      await kemenporaPage.waitForTimeout(800);
+      await kemenporaPage.waitForTimeout(600);
 
       const elemDialog = kemenporaPage.locator('[role="dialog"]').first();
       await elemDialog.waitFor({ state: 'visible', timeout: 5000 });
+
+      // Pilih Entitas pemilik elemen pada dropdown modal jika berbeda dari entitas pertama
+      const entitasTrigger = elemDialog.locator('#select-dataset-step3-modal-entitas');
+      if (await entitasTrigger.isVisible()) {
+        const currentEnt = (await entitasTrigger.innerText().catch(() => '')).trim();
+        if (currentEnt !== elem.namaEntitas) {
+          await entitasTrigger.click();
+          await kemenporaPage.waitForTimeout(300);
+          const entOpt = kemenporaPage.locator(`[role="option"]:has-text("${elem.namaEntitas}")`).first();
+          if (await entOpt.isVisible({ timeout: 2000 }).catch(() => false)) {
+            await entOpt.click();
+            await kemenporaPage.waitForTimeout(200);
+          }
+        }
+      }
 
       // Isi input fields yang memiliki ID spesifik
       await elemDialog.locator('#input-dataset-step3-modal-nama-elemen').fill(elem.namaElemen);
@@ -465,7 +300,7 @@ export async function runRegisterKemenporaMTNFlow() {
         const kewajibanTrigger = elemDialog.locator('#select-dataset-step3-modal-sifat-kewajiban');
         if (await kewajibanTrigger.isVisible()) {
           await kewajibanTrigger.click();
-          await kemenporaPage.waitForTimeout(300);
+          await kemenporaPage.waitForTimeout(250);
           const opt = kemenporaPage.locator('[role="option"]:has-text("Optional")').first();
           if (await opt.isVisible()) await opt.click();
         }
@@ -474,11 +309,19 @@ export async function runRegisterKemenporaMTNFlow() {
       await assertNoValidationErrors(kemenporaPage, `Modal Elemen Kamus Data [${elem.namaElemen}]`);
       const saveElemBtn = elemDialog.locator('#button-dataset-step3-modal-simpan, button:has-text("Tambah Kamus Data"), button:has-text("Simpan")').first();
       await saveElemBtn.click({ force: true });
-      await kemenporaPage.waitForTimeout(1000);
+      await kemenporaPage.waitForTimeout(600);
     }
 
-    console.log('   ✅ Seluruh 16 elemen kamus data berhasil ditambahkan ke daftar.');
+    console.log(`   ✅ Seluruh ${kemenpora99KamusElements.length} elemen kamus data berhasil ditambahkan ke daftar.`);
     await assertNoValidationErrors(kemenporaPage, 'Registrasi Dataset Step 3 (Daftar Kamus Data)');
+
+    // Pilih Primary Key pada baris id_olahragawan
+    const pkRadio = kemenporaPage.locator('tbody tr:has-text("id_olahragawan") button:has-text("Pilih PK"), tbody tr:has-text("id_olahragawan") input[type="radio"]').first();
+    if (await pkRadio.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await pkRadio.click({ force: true });
+      console.log('   🔑 Primary Key "id_olahragawan" dipilih.');
+      await kemenporaPage.waitForTimeout(500);
+    }
 
     // ==========================================================================
     // SUBMIT & REVIEW REGISTRASI DATASET
@@ -589,9 +432,9 @@ export async function runRegisterKemenporaMTNFlow() {
     await safeDismissUnexpectedPopups(sekPubPage, logger, 'B');
     await sekPubContext.close();
 
-    console.log('\n╔══════════════════════════════════════════════════════════════════════════════╗');
-    console.log('║       SUKSES: DATASET KEMENPORA (DS-PORA-001) BERHASIL DIREGISTRASIKAN!       ║');
-    console.log('╚══════════════════════════════════════════════════════════════════════════════╝\n');
+    console.log('\n╔════════════════════════════════════════════════════════════════════════════════════════╗');
+    console.log('║       SUKSES: DATASET KEMENPORA KLASTER RELASIONAL BERHASIL DIREGISTRASIKAN!           ║');
+    console.log('╚════════════════════════════════════════════════════════════════════════════════════════╝\n');
 
   } catch (err: any) {
     console.error('❌ Terjadi kesalahan pada flow registrasi Kemenpora MTN:', err);
@@ -602,7 +445,7 @@ export async function runRegisterKemenporaMTNFlow() {
 }
 
 if (process.argv[1]?.includes('register-kemenpora-mtn-flow')) {
-  runRegisterKemenporaMTNFlow().catch((err) => {
+  runRegisterKemenporaRelationalFlow().catch((err) => {
     console.error('Fatal error:', err);
     process.exit(1);
   });
