@@ -114,11 +114,9 @@ export async function runPageByPageVerification(options: VerificationOptions = {
 
   const userEmail =
     process.env.USER_PENGUSUL_USERNAME ||
-    process.env.USER_WALIDATA_USERNAME ||
-    'exchange@test.kemensos.go.id';
+    'exchange@test.kemendagri.go.id';
   const userPassword =
     process.env.USER_PENGUSUL_PASSWORD ||
-    process.env.USER_WALIDATA_PASSWORD ||
     '123456789';
 
   const instansiCtx = resolveInstansiContext(userEmail);
@@ -136,8 +134,8 @@ export async function runPageByPageVerification(options: VerificationOptions = {
 
   if (options.caseType === 'tertutup') {
     payload.registrasiDataset.step1Informasi.klasifikasiRisiko = 'Tertutup';
-    payload.registrasiDataset.step1Informasi.nama = `Data Rahasia dan Biometrik Kependudukan Khusus [${new Date().toLocaleTimeString('id-ID', { hour12: false }).replace(/\./g, ':')}]`;
-    payload.registrasiDataset.step1Informasi.deskripsi = `Dataset klasifikasi tertutup negara yang memuat identitas kependudukan dan perlindungan data terbatas sesuai ketentuan kerahasiaan informasi publik.`;
+    payload.registrasiDataset.step1Informasi.nama = `Data Rahasia Seleksi dan Rekam Medis Atlet Nasional [${new Date().toLocaleTimeString('id-ID', { hour12: false }).replace(/\./g, ':')}]`;
+    payload.registrasiDataset.step1Informasi.deskripsi = `Dataset klasifikasi tertutup negara yang memuat identitas rekam medis atlet strategis nasional sesuai ketentuan kerahasiaan informasi publik.`;
     payload.registrasiDataset.step1Informasi.dampakKerahasiaan = 'tinggi';
     payload.registrasiDataset.step1Informasi.dampakIntegritas = 'tinggi';
     payload.registrasiDataset.step1Informasi.dampakKetersediaan = 'tinggi';

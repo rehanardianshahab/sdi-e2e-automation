@@ -38,3 +38,4 @@ async function inspectKemenpora() {
 }
 
 inspectKemenpora().catch(console.error);
+
