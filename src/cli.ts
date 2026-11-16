@@ -16,7 +16,8 @@ import {
 import {
   runPageByPageVerification,
   runRevisiRegistrasiVerification,
-  runLayananSplpVerification
+  runLayananSplpVerification,
+  runPengajuanAksesLifecycleVerification
 } from './flows/verify-page-access.js';
 
 dotenv.config();
@@ -38,7 +39,7 @@ function printBanner() {
     .toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false })
     .replace(/\./g, ':');
   const baseUrl = (process.env.BASE_URL || 'https://fe-staging.data.go.id').replace(/\/$/, '');
-  const userPengusul = process.env.USER_PENGUSUL_USERNAME || 'exchange@test.kemensos.go.id';
+  const userPengusul = process.env.USER_PENGUSUL_USERNAME || 'exchange@test.kemendagri.go.id';
   const instansiCtx = resolveInstansiContext(userPengusul);
 
   console.log('╭──────────────────────────────────────────────────────────────────────────────────────╮');
@@ -121,12 +122,17 @@ async function main() {
           description: 'Alur penambahan layanan dari halaman registrasi layanan dengan opsi SKDN, simpan form, lalu beralih ke /splp untuk verifikasi data'
         },
         {
-          name: '5. Jalankan Semua Case Sekaligus (All Cases: Terbatas, Tertutup, Revisi, Layanan SKDN & SPLP)',
+          name: '5. Case Kebutuhan Data s.d. Verifikasi Pengajuan Akses Data (Full E2E Modul A s.d. E & Approval Sekretariat)',
+          value: 'pengajuan-akses',
+          description: 'Alur lengkap dari usulan kebutuhan, publish dataset, registrasi layanan SKDN, permohonan akses s.d. verifikasi oleh Sekretariat'
+        },
+        {
+          name: '6. Jalankan Semua Case Sekaligus (All Cases: Terbatas, Tertutup, Revisi, Layanan SKDN & SPLP, Pengajuan Akses)',
           value: 'all',
           description: 'Eksekusi berurutan seluruh skenario untuk verifikasi komprehensif'
         }
       ],
-      default: 'terbatas'
+      default: 'pengajuan-akses'
     });
 
     if (selectedCase === 'terbatas') {
@@ -137,15 +143,19 @@ async function main() {
       await runRevisiRegistrasiVerification();
     } else if (selectedCase === 'layanan') {
       await runLayananSplpVerification();
+    } else if (selectedCase === 'pengajuan-akses') {
+      await runPengajuanAksesLifecycleVerification();
     } else if (selectedCase === 'all') {
-      console.log('\n🚀 [1/4] Menjalankan Case 1: Data Terbatas...');
+      console.log('\n🚀 [1/5] Menjalankan Case 1: Data Terbatas...');
       await runPageByPageVerification({ caseType: 'terbatas' });
-      console.log('\n🚀 [2/4] Menjalankan Case 2: Data Tertutup...');
+      console.log('\n🚀 [2/5] Menjalankan Case 2: Data Tertutup...');
       await runPageByPageVerification({ caseType: 'tertutup' });
-      console.log('\n🚀 [3/4] Menjalankan Case 3: Skenario Revisi Registrasi Data...');
+      console.log('\n🚀 [3/5] Menjalankan Case 3: Skenario Revisi Registrasi Data...');
       await runRevisiRegistrasiVerification();
-      console.log('\n🚀 [4/4] Menjalankan Case 4: Registrasi Layanan & Verifikasi di /splp...');
+      console.log('\n🚀 [4/5] Menjalankan Case 4: Registrasi Layanan & Verifikasi di /splp...');
       await runLayananSplpVerification();
+      console.log('\n🚀 [5/5] Menjalankan Case 5: Kebutuhan Data s.d. Verifikasi Pengajuan Akses Data...');
+      await runPengajuanAksesLifecycleVerification();
     }
     return;
   }
@@ -179,8 +189,8 @@ async function main() {
   console.log(`│  ▸  Sumber Data  : ${sourceLabel.padEnd(65)}│`);
   console.log('╰──────────────────────────────────────────────────────────────────────────────────────╯\n');
 
-  const userEmail = process.env.USER_PENGUSUL_USERNAME || process.env.USER_WALIDATA_USERNAME || 'exchange@test.kemensos.go.id';
-  const userPassword = process.env.USER_PENGUSUL_PASSWORD || process.env.USER_WALIDATA_PASSWORD || '123456789';
+  const userEmail = process.env.USER_PENGUSUL_USERNAME || 'exchange@test.kemendagri.go.id';
+  const userPassword = process.env.USER_PENGUSUL_PASSWORD || '123456789';
 
   const logger = new StepLogger(fullExecutionList, sourceLabel);
   const payload = await generateSdiE2EPayload(undefined, userEmail);

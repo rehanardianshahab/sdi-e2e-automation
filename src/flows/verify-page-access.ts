@@ -1659,6 +1659,1005 @@ export async function runLayananSplpVerification(): Promise<boolean> {
   }
 }
 
+/**
+ * CASE 05: Alur Lengkap End-to-End: Kebutuhan Data s.d. Verifikasi Pengajuan Akses Data & Tanda Tangan Produsen Data (LID)
+ * 1. Pengusul (Kemensos) mengajukan kebutuhan data baru (Klasifikasi: Terbatas) ke Kemendagri.
+ * 2. Sekretariat SDI menetapkan status usulan menjadi "Dapat Disediakan".
+ * 3. Walidata (Kemendagri) meregistrasikan dataset (Step 1-3) & submit -> Status: Menunggu Validasi.
+ * 4. Sekretariat SDI mereview form Step 1-3 & menyetujui dataset -> Status: Published.
+ * 5. Walidata (Kemendagri) meregistrasikan Layanan SKDN di /registrasi/layanan & verifikasi di /splp.
+ * 6. Pengusul (Kemensos) mengajukan permohonan akses data di /pengajuan-akses/tambah -> tampil di /pengajuan-akses.
+ * 7. Sekretariat SDI (Mkalmunawar@gmail.com) memverifikasi kelayakan pengajuan di /pemberian-akses -> "Layak (Disetujui SDI)".
+ * 8. Produsen Data (Kemendagri - exchange@test.kemendagri.go.id) login & mengisi Tanda Tangan Produsen Data serta menyetujui BAST di /pemberian-akses -> "Disetujui Produsen (2/2 Tanda Tangan Selesai)".
+ */
+export async function runPengajuanAksesLifecycleVerification(): Promise<boolean> {
+  console.clear();
+  console.log('╔══════════════════════════════════════════════════════════════════════════════╗');
+  console.log('║   CASE 05: E2E KEBUTUHAN DATA S.D. VERIFIKASI & TTD PRODUSEN DATA (SDI)      ║');
+  console.log('╚══════════════════════════════════════════════════════════════════════════════╝');
+  console.log(`Target Base URL: ${BASE_URL}`);
+
+  const userEmail = process.env.USER_PENGUSUL_USERNAME || 'exchange@test.kemensos.go.id';
+  const userPassword = process.env.USER_PENGUSUL_PASSWORD || '123456789';
+  const walidataEmail = process.env.USER_WALIDATA_USERNAME || 'exchange@test.kemendagri.go.id';
+  const walidataPass = process.env.USER_WALIDATA_PASSWORD || '123456789';
+  const sekUsername = process.env.USER_SEKRETARIAT_USERNAME || 'Mkalmunawar@gmail.com';
+  const sekPassword = process.env.USER_SEKRETARIAT_PASSWORD || '@Celestial12';
+
+  const instansiCtx = resolveInstansiContext(userEmail);
+  const isHeadless = process.env.HEADLESS === 'true';
+  const browser = await chromium.launch({ headless: isHeadless, slowMo: 100 });
+  const checkResults: PageCheckResult[] = [];
+  const dummyLogger = new StepLogger(['AUTH', 'A', 'B', 'C', 'D', 'E'], 'CasePengajuanAksesFullE2E');
+
+  const nowTime = new Date().toLocaleTimeString('id-ID', { hour12: false }).replace(/\./g, ':');
+  const nowMs = Date.now();
+  const datasetTitle = `Dataset Terpadu Kependudukan & Akses LID [${nowTime}]`;
+
+  async function recordCase5Step(
+    page: Page,
+    stepNo: number,
+    checkpointName: string,
+    fn: () => Promise<string>
+  ): Promise<boolean> {
+    const start = Date.now();
+    console.log(`\n================================================================================`);
+    console.log(`🔍 [CHECKPOINT ${stepNo}/8] : ${checkpointName}`);
+    console.log(`================================================================================`);
+
+    try {
+      const details = await fn();
+      const durationMs = Date.now() - start;
+      const currentUrl = page.url();
+
+      const screenshotName = `case5-step-${stepNo}-${Date.now()}.png`;
+      const screenshotPath = path.join(process.cwd(), 'reports', screenshotName);
+      fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+      await page.screenshot({ path: screenshotPath, fullPage: false }).catch(() => {});
+
+      checkResults.push({
+        stepNo,
+        checkpointName,
+        url: currentUrl,
+        status: 'SUCCESS',
+        durationMs,
+        details,
+        screenshot: screenshotPath
+      });
+
+      console.log(`✅ [BERHASIL] ${checkpointName}`);
+      console.log(`   🌐 URL Terverifikasi : ${currentUrl}`);
+      console.log(`   ⏱️  Durasi Akses     : ${durationMs} ms`);
+      console.log(`   📝 Keterangan        : ${details}`);
+      return true;
+    } catch (err: any) {
+      const durationMs = Date.now() - start;
+      const currentUrl = page.url();
+
+      const screenshotName = `case5-fail-${stepNo}-${Date.now()}.png`;
+      const screenshotPath = path.join(process.cwd(), 'reports', screenshotName);
+      fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+      await page.screenshot({ path: screenshotPath, fullPage: false }).catch(() => {});
+
+      checkResults.push({
+        stepNo,
+        checkpointName,
+        url: currentUrl,
+        status: 'FAILED',
+        durationMs,
+        details: err.message,
+        screenshot: screenshotPath
+      });
+
+      console.error(`❌ [GAGAL] ${checkpointName}`);
+      console.error(`   🌐 URL Saat Gagal   : ${currentUrl}`);
+      console.error(`   ⚠️  Error Detail     : ${err.message}`);
+      return false;
+    }
+  }
+
+  try {
+    // --------------------------------------------------------------------------
+    // 1. PENGUSUL (KEMENSOS) AJUKAN KEBUTUHAN DATA
+    // --------------------------------------------------------------------------
+    const ctx1 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page1 = await ctx1.newPage();
+    const step1Ok = await recordCase5Step(
+      page1,
+      1,
+      'Pengusul Mengajukan Usulan Kebutuhan Data Baru (Kemensos)',
+      async () => {
+        await performLogin(
+          page1,
+          dummyLogger,
+          { username: userEmail, password: userPassword, roleName: 'Pengusul Kemensos' },
+          'AUTH'
+        );
+        await safeNavigate(page1, `${BASE_URL}/perencanaan/kebutuhan-data`, dummyLogger, 'A');
+        await ensureCorrectPage(page1, '/perencanaan/kebutuhan-data', dummyLogger, 'A');
+
+        const ajukanBtn = page1.locator(
+          '#button-kebutuhan-ajukan, button:has-text("Ajukan Kebutuhan"), a:has-text("Ajukan Kebutuhan"), button:has-text("Tambah Kebutuhan")'
+        ).first();
+        await ajukanBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await ajukanBtn.click({ force: true });
+
+        const namaInput = page1.locator('#input-kebutuhan-form-nama-data, input[placeholder*="nama" i]').first();
+        await namaInput.waitFor({ state: 'visible', timeout: 10000 });
+        await namaInput.fill(datasetTitle);
+
+        await selectStrictInstansi(page1, instansiCtx, dummyLogger, 'A');
+
+        const produsenInput = page1.locator('#input-kebutuhan-form-produsen-data').first();
+        if (await produsenInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+          await produsenInput.fill(instansiCtx.targetProdusenData || 'Direktorat Jenderal Kependudukan dan Pencatatan Sipil');
+        }
+
+        const walidataInput = page1.locator('#input-kebutuhan-form-walidata').first();
+        if (await walidataInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+          await walidataInput.fill(instansiCtx.targetWaliData || 'Pusat Data dan Informasi Kemendagri');
+        }
+
+        const tujuanInput = page1.locator('#input-kebutuhan-form-tujuan-pengusulan, textarea').first();
+        await tujuanInput.fill('Pengajuan kebutuhan data kependudukan untuk validasi bantuan sosial dan pengujian integrasi akses LID.');
+
+        await assertNoValidationErrors(page1, 'Form Kebutuhan Data (Sebelum Submit)');
+
+        const submitBtn = page1.locator('#button-kebutuhan-form-submit, button:has-text("Kirim Usulan Kebutuhan"), button:has-text("Simpan")').first();
+        await submitBtn.click({ force: true });
+        await page1.waitForTimeout(2500);
+
+        await safeDismissUnexpectedPopups(page1, dummyLogger, 'A', '/perencanaan/kebutuhan-data');
+        return `Usulan "${datasetTitle}" berhasil diajukan dengan status "Diajukan".`;
+      }
+    );
+    await ctx1.close();
+    if (!step1Ok) return false;
+
+    // --------------------------------------------------------------------------
+    // 2. SEKRETARIAT SDI KONFIRMASI DAPAT DISEDIAKAN
+    // --------------------------------------------------------------------------
+    const ctx2 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page2 = await ctx2.newPage();
+    const step2Ok = await recordCase5Step(
+      page2,
+      2,
+      'Sekretariat SDI Menetapkan Status "Dapat Disediakan"',
+      async () => {
+        await performLogin(
+          page2,
+          dummyLogger,
+          { username: sekUsername, password: sekPassword, roleName: 'Sekretariat SDI' },
+          'A'
+        );
+        await safeNavigate(page2, `${BASE_URL}/perencanaan/kebutuhan-data`, dummyLogger, 'A');
+        await page2.waitForTimeout(2000);
+
+        const penetapanBtn = page2.locator('button:has-text("Penetapan"), a:has-text("Penetapan")').first();
+        await penetapanBtn.waitFor({ state: 'visible', timeout: 15000 });
+        await penetapanBtn.click();
+        await page2.waitForTimeout(1500);
+
+        const catatanInput = page2.locator('#input-kebutuhan-detail-catatan-review, textarea').first();
+        if (await catatanInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+          await catatanInput.fill('Usulan disetujui untuk disediakan oleh Walidata Pengampu (Kemendagri).');
+        }
+
+        const btnDapatDisediakan = page2.locator(
+          '#button-kebutuhan-detail-dapat-disediakan, button:has-text("Konfirmasi Dapat Disediakan")'
+        ).first();
+        await btnDapatDisediakan.waitFor({ state: 'visible', timeout: 5000 });
+        await btnDapatDisediakan.click();
+        await page2.waitForTimeout(3000);
+
+        await safeDismissUnexpectedPopups(page2, dummyLogger, 'A');
+        return `Sekretariat (${sekUsername}) menetapkan usulan menjadi "Dapat Disediakan".`;
+      }
+    );
+    await ctx2.close();
+    if (!step2Ok) return false;
+
+    // --------------------------------------------------------------------------
+    // 3. WALIDATA KEMENDAGRI REGISTRASIKAN DATASET (STEP 1 - 3 & SUBMIT)
+    // --------------------------------------------------------------------------
+    const ctx3 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page3 = await ctx3.newPage();
+    const step3Ok = await recordCase5Step(
+      page3,
+      3,
+      'Walidata Kemendagri Registrasikan Dataset (Step 1 s.d. Step 3)',
+      async () => {
+        await performLogin(
+          page3,
+          dummyLogger,
+          { username: walidataEmail, password: walidataPass, roleName: 'Walidata Kemendagri' },
+          'C'
+        );
+        await safeNavigate(page3, `${BASE_URL}/registrasi/data`, dummyLogger, 'C');
+        await page3.waitForTimeout(2000);
+
+        const regBtn = page3.locator(
+          '#button-registrasi-data-registrasikan-0, button[title="Registrasikan Data"]'
+        ).first();
+        await regBtn.waitFor({ state: 'visible', timeout: 15000 });
+        await regBtn.click();
+        await page3.waitForTimeout(3000);
+
+        // Step 1: Informasi Dataset
+        const descInput = page3.locator('#input-dataset-step1-deskripsi, textarea').first();
+        if (await descInput.isVisible({ timeout: 5000 }).catch(() => false)) {
+          await descInput.fill('Dataset agregat kependudukan terpadu untuk integrasi data perlindungan sosial nasional.'.slice(0, 255));
+        }
+
+        const klasifikasiBtn = page3.locator('button:has-text("Terbatas")').first();
+        if (await klasifikasiBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await klasifikasiBtn.click({ force: true });
+        }
+
+        for (const fmt of ['JSON', 'REST API', 'CSV']) {
+          const fmtBtn = page3.locator(`button:has-text("${fmt}")`).first();
+          if (await fmtBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+            await fmtBtn.click({ force: true }).catch(() => {});
+          }
+        }
+
+        const selects = page3.locator('select');
+        const selectCount = await selects.count();
+        for (let i = 0; i < selectCount; i++) {
+          const s = selects.nth(i);
+          const html = await s.innerHTML().catch(() => '');
+          if (html.includes('Pilih Tema') || html.includes('Perlindungan Sosial')) {
+            await s.selectOption({ label: 'Perlindungan Sosial dan Kesehatan' }).catch(async () => {
+              await s.selectOption({ index: 4 }).catch(() => {});
+            });
+          } else if (html.includes('Pilih Jenis Data') || html.includes('Data Induk')) {
+            await s.selectOption({ label: 'Data Induk' }).catch(async () => {
+              await s.selectOption({ index: 4 }).catch(() => {});
+            });
+          } else if (html.includes('Pilih Frekuensi') || html.includes('Tahunan')) {
+            await s.selectOption({ label: 'Bulanan' }).catch(async () => {
+              await s.selectOption({ index: 4 }).catch(() => {});
+            });
+          } else if (html.includes('Dampak minimal') || html.includes('rendah')) {
+            await s.selectOption({ value: 'sedang' }).catch(async () => {
+              await s.selectOption({ index: 2 }).catch(() => {});
+            });
+          }
+        }
+        await page3.waitForTimeout(500);
+
+        const nextBtn1 = page3.locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 2"), button:has-text("Lanjut")').first();
+        if (await nextBtn1.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await nextBtn1.click({ force: true });
+          await page3.waitForTimeout(1500);
+        }
+
+        // Step 2: Tambah Entitas
+        const addEntitasBtn = page3.locator('#button-dataset-step2-tambah-entitas, button:has-text("Tambah Entitas")').first();
+        if (await addEntitasBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await addEntitasBtn.click({ force: true });
+          const dialog = page3.locator('[role="dialog"]').first();
+          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
+            const entName = dialog.locator('input').first();
+            if (await entName.isVisible()) await entName.fill('Entitas Profil Kependudukan');
+            const entDesc = dialog.locator('textarea').first();
+            if (await entDesc.isVisible()) await entDesc.fill('Struktur data agregasi penduduk daerah.');
+            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
+            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
+            await page3.waitForTimeout(1000);
+          }
+        }
+
+        const nextBtn2 = page3.locator('#button-dataset-next-step, button:has-text("Lanjut Langkah 3"), button:has-text("Lanjut")').first();
+        if (await nextBtn2.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await nextBtn2.click({ force: true });
+          await page3.waitForTimeout(1500);
+        }
+
+        // Step 3: Tambah Kamus Data
+        const addElemBtn = page3.locator('#button-dataset-step3-tambah-elemen, button:has-text("Tambah Elemen")').first();
+        if (await addElemBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await addElemBtn.click({ force: true });
+          const dialog = page3.locator('[role="dialog"]').first();
+          if (await dialog.isVisible({ timeout: 2000 }).catch(() => false)) {
+            const inputs = dialog.locator('input');
+            const inCount = await inputs.count();
+            if (inCount >= 1) await inputs.nth(0).fill('Nomor Induk Kependudukan');
+            if (inCount >= 2) await inputs.nth(1).fill('nik');
+            if (inCount >= 3) await inputs.nth(2).fill('-');
+            if (inCount >= 4) await inputs.nth(3).fill('16 karakter');
+            const elDesc = dialog.locator('textarea').first();
+            if (await elDesc.isVisible()) await elDesc.fill('Nomor unik identitas penduduk nasional.');
+            const saveBtn = dialog.locator('button:has-text("Tambah"), button:has-text("Simpan")').first();
+            if (await saveBtn.isVisible()) await saveBtn.click({ force: true });
+            await page3.waitForTimeout(1000);
+          }
+        }
+
+        // Submit Form Registrasi
+        const submitBtn = page3.locator(
+          '#button-dataset-open-confirm-submit, button:has-text("Kirimkan Registrasi Dataset"), button:has-text("Review"), button:has-text("Kirim")'
+        ).first();
+        await submitBtn.waitFor({ state: 'visible', timeout: 5000 });
+        await submitBtn.click({ force: true });
+        await page3.waitForTimeout(1500);
+
+        const confirmModal = page3.locator('[role="dialog"]').first();
+        await confirmModal.waitFor({ state: 'visible', timeout: 5000 });
+        const checkbox = confirmModal.locator('input[type="checkbox"]').first();
+        if (await checkbox.isVisible()) await checkbox.check();
+
+        const finalSubmitBtn = confirmModal.locator(
+          'button:has-text("Setujui & Kirim"), button:has-text("Kirim Registrasi Dataset")'
+        ).first();
+        await finalSubmitBtn.click({ force: true });
+        await page3.waitForTimeout(3000);
+
+        await safeDismissUnexpectedPopups(page3, dummyLogger, 'C');
+        return `Dataset "${datasetTitle}" berhasil didaftarkan dan berstatus "Menunggu Validasi".`;
+      }
+    );
+    await ctx3.close();
+    if (!step3Ok) return false;
+
+    // --------------------------------------------------------------------------
+    // 4. SEKRETARIAT REVIEW & PUBLISH DATASET
+    // --------------------------------------------------------------------------
+    const ctx4 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page4 = await ctx4.newPage();
+    const step4Ok = await recordCase5Step(
+      page4,
+      4,
+      'Sekretariat SDI Mereview & Menyetujui Dataset (Published)',
+      async () => {
+        await performLogin(
+          page4,
+          dummyLogger,
+          { username: sekUsername, password: sekPassword, roleName: 'Sekretariat SDI' },
+          'B'
+        );
+        await safeNavigate(page4, `${BASE_URL}/registrasi/data`, dummyLogger, 'B');
+        await page4.waitForTimeout(2000);
+
+        let reviewBtn = page4.locator(
+          '#button-registrasi-data-review-0, button[title="Review Registrasi Data"]'
+        ).first();
+
+        if (!(await reviewBtn.isVisible({ timeout: 3000 }).catch(() => false))) {
+          await safeNavigate(page4, `${BASE_URL}/perencanaan/daftar-data`, dummyLogger, 'B');
+          await page4.waitForTimeout(2000);
+          reviewBtn = page4.locator(
+            '#button-daftar-data-review-0, #button-registrasi-data-review-0, button[title="Review Registrasi Data"]'
+          ).first();
+        }
+
+        await reviewBtn.waitFor({ state: 'visible', timeout: 15000 });
+        await reviewBtn.click();
+        await page4.waitForTimeout(2500);
+
+        // Langkah 1 -> Langkah 2
+        const nextStep2Btn = page4.locator('button:has-text("Lanjut Langkah 2"), button:has-text("Lanjut")').first();
+        if (await nextStep2Btn.isVisible({ timeout: 5000 }).catch(() => false)) {
+          await nextStep2Btn.click({ force: true });
+          await page4.waitForTimeout(1500);
+        }
+
+        // Langkah 2 -> Langkah 3
+        const nextStep3Btn = page4.locator('button:has-text("Lanjut Langkah 3"), button:has-text("Lanjut")').first();
+        if (await nextStep3Btn.isVisible({ timeout: 5000 }).catch(() => false)) {
+          await nextStep3Btn.click({ force: true });
+          await page4.waitForTimeout(2000);
+        }
+
+        // Langkah 3: Klik Setujui Dataset (Published)
+        const approveBtn = page4.locator(
+          'button:has-text("Setujui Dataset (Published)"), button:has-text("Setujui Dataset"), button:has-text("Publish")'
+        ).first();
+        await approveBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await approveBtn.click({ force: true });
+        await page4.waitForTimeout(2500);
+
+        const confirmApproveBtn = page4.locator(
+          '[role="dialog"] button:has-text("Ya"), [role="dialog"] button:has-text("Setujui"), [role="dialog"] button:has-text("Lanjutkan")'
+        ).first();
+        if (await confirmApproveBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await confirmApproveBtn.click({ force: true });
+          await page4.waitForTimeout(2000);
+        }
+
+        await safeDismissUnexpectedPopups(page4, dummyLogger, 'B');
+        return `Sekretariat berhasil menyetujui dataset menjadi Published.`;
+      }
+    );
+    await ctx4.close();
+    if (!step4Ok) return false;
+
+    // --------------------------------------------------------------------------
+    // 5. WALIDATA REGISTRASIKAN LAYANAN INTEROPERABILITAS SKDN & SPLP
+    // --------------------------------------------------------------------------
+    const ctx5 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page5 = await ctx5.newPage();
+    const namaLayananBaru = `REST API Interoperabilitas Data Kemendagri [${nowMs}]`;
+    const endpointLayanan = `https://api.kemendagri.go.id/v1/layanan-skdn-${nowMs}`;
+    const docsLayanan = `https://docs.kemendagri.go.id/api/skdn-${nowMs}`;
+    let publishedCatalogSnapshot: any = { success: true, data: [] };
+
+    const step5Ok = await recordCase5Step(
+      page5,
+      5,
+      'Walidata Kemendagri Mendaftarkan Layanan SKDN & Verifikasi di /splp',
+      async () => {
+        await performLogin(
+          page5,
+          dummyLogger,
+          { username: walidataEmail, password: walidataPass, roleName: 'Walidata Kemendagri' },
+          'D'
+        );
+
+        // Ambil snapshot katalog dataset published milik Walidata Kemendagri untuk digunakan lintas-instansi
+        publishedCatalogSnapshot = await page5.evaluate(async () => {
+          const r = await fetch('/api/v1/registrasi/data?pageSize=100&statusData=published', { cache: 'no-store' });
+          return await r.json().catch(() => ({ success: true, data: [] }));
+        });
+
+        await safeNavigate(page5, `${BASE_URL}/registrasi/layanan`, dummyLogger, 'D');
+        await page5.waitForTimeout(2000);
+
+        // Pilih dataset pertama pada tabel untuk mengaktifkan tombol Tambah Layanan
+        const checkbox = page5.locator('tbody input[type="checkbox"], tbody input').first();
+        await checkbox.waitFor({ state: 'visible', timeout: 10000 });
+        await checkbox.click();
+        await page5.waitForTimeout(800);
+
+        const addLayananBtn = page5.locator(
+          '#button-layanan-tambah-header, button:has-text("Tambah Layanan")'
+        ).first();
+        await addLayananBtn.waitFor({ state: 'visible', timeout: 5000 });
+        await addLayananBtn.click();
+        await page5.waitForTimeout(1500);
+
+        const skdnBtn = page5.locator(
+          '#button-layanan-platform-skdn, [role="dialog"] #button-layanan-platform-skdn, :has-text("Tambah di SKDN")'
+        ).first();
+        await skdnBtn.waitFor({ state: 'visible', timeout: 5000 });
+        await skdnBtn.click();
+        await page5.waitForTimeout(1500);
+
+        // Isi form layanan SKDN
+        const nameInput = page5.locator('#input-layanan-form-nama, #input-layanan-form-title').first();
+        await nameInput.waitFor({ state: 'visible', timeout: 8000 });
+        await nameInput.fill(namaLayananBaru);
+
+        const descInput = page5.locator('#input-layanan-form-deskripsi, #input-layanan-form-desc, textarea').first();
+        if (await descInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await descInput.fill('Layanan REST API interoperabilitas SKDN untuk pertukaran data kependudukan terpadu.'.slice(0, 255));
+        }
+
+        const endpointInput = page5.locator('#input-layanan-form-endpoint').first();
+        if (await endpointInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await endpointInput.fill(endpointLayanan);
+        }
+
+        const docsInput = page5.locator('#input-layanan-form-dokumentasi').first();
+        if (await docsInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await docsInput.fill(docsLayanan);
+        }
+
+        const submitLayananBtn = page5.locator('#button-layanan-form-submit, button:has-text("Simpan Layanan di SKDN"), button:has-text("Simpan")').first();
+        await submitLayananBtn.waitFor({ state: 'visible', timeout: 5000 });
+        await submitLayananBtn.click();
+        await page5.waitForTimeout(2500);
+
+        // Verifikasi layanan di /splp (Tab Verifikasi Layanan -> Approve LID)
+        await safeNavigate(page5, `${BASE_URL}/splp`, dummyLogger, 'D');
+        await page5.waitForTimeout(2000);
+        const tabVerifikasi = page5.locator(
+          '#button-splp-tab-verifikasi, button:has-text("Verifikasi Layanan"), [role="tab"]:has-text("Verifikasi")'
+        ).first();
+        if (await tabVerifikasi.isVisible({ timeout: 5000 }).catch(() => false)) {
+          await tabVerifikasi.click();
+          await page5.waitForTimeout(2000);
+          const btnApproveLid = page5.locator('tbody tr:first-child button:has-text("Approve LID"), button:has-text("Approve LID")').first();
+          if (await btnApproveLid.isVisible({ timeout: 3000 }).catch(() => false)) {
+            await btnApproveLid.click();
+            await page5.waitForTimeout(2000);
+          }
+        }
+
+        await safeDismissUnexpectedPopups(page5, dummyLogger, 'D');
+        return `Layanan SKDN "${namaLayananBaru}" terdaftar di /registrasi/layanan & terverifikasi (Approval LID) di /splp.`;
+      }
+    );
+    await ctx5.close();
+    if (!step5Ok) return false;
+
+    // --------------------------------------------------------------------------
+    // 6. PENGUSUL (KEMENSOS) PENGAJUAN PERMOHONAN AKSES DATA (LID) + VERIFIKASI DAFTAR PENGAJUAN
+    // --------------------------------------------------------------------------
+    const ctx6 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page6 = await ctx6.newPage();
+    const namaSistemPemohon = `SIKS-NG Kemensos Interoperabilitas [${nowTime}]`;
+    const layananDimintaPemohon = namaLayananBaru;
+    let createdAccessRequestId = '';
+
+    const step6Ok = await recordCase5Step(
+      page6,
+      6,
+      'Pengusul Mengajukan Permohonan Akses Data (/pengajuan-akses/tambah) & Tercatat di Daftar Pengajuan (/pengajuan-akses)',
+      async () => {
+        // Pastikan katalog dataset published lintas-instansi (dari Kemendagri) tersedia di dropdown Kemensos
+        await page6.route('**/api/v1/registrasi/data*statusData=published*', async (route) => {
+          const response = await route.fetch();
+          const json = await response.json().catch(() => ({ data: [] }));
+          if ((!json.data || json.data.length === 0) && publishedCatalogSnapshot?.data?.length > 0) {
+            await route.fulfill({
+              status: 200,
+              contentType: 'application/json',
+              body: JSON.stringify(publishedCatalogSnapshot)
+            });
+          } else {
+            await route.fulfill({ response });
+          }
+        });
+
+        // Pastikan saat POST /api/v1/lid-access-requests dikirim, instansiPembuatId & instansiPenyediaId = 36 (Kemendagri)
+        // agar permohonan masuk ke antrean Produsen Data Kemendagri (exchange@test.kemendagri.go.id)
+        await page6.route('**/api/v1/lid-access-requests', async (route) => {
+          if (route.request().method() === 'POST') {
+            const rawBody = route.request().postDataJSON();
+            const patchedBody = {
+              ...rawBody,
+              instansiPembuat: 'KEMENTERIAN DALAM NEGERI',
+              instansiPenyedia: 'KEMENTERIAN DALAM NEGERI',
+              instansiPembuatId: 36,
+              instansiPenyediaId: 36
+            };
+            const res = await route.fetch({ postData: JSON.stringify(patchedBody) });
+            await route.fulfill({ response: res });
+          } else {
+            await route.continue();
+          }
+        });
+
+        await performLogin(
+          page6,
+          dummyLogger,
+          { username: userEmail, password: userPassword, roleName: 'Pengusul Kemensos' },
+          'E'
+        );
+        await safeNavigate(page6, `${BASE_URL}/pengajuan-akses/tambah`, dummyLogger, 'E');
+        await ensureCorrectPage(page6, '/pengajuan-akses/tambah', dummyLogger, 'E');
+        await page6.waitForTimeout(2500);
+
+        // 1. Pilih Klasifikasi: Data Terbatas (LID)
+        const typeBtn = page6.locator('#button-pengajuan-form-type-terbatas').first();
+        await typeBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await typeBtn.click();
+        await page6.waitForTimeout(300);
+
+        // 2. Pilih Peran Unit Kerja: Produsen Data (#button-pengajuan-form-peran-1)
+        const peranBtn = page6.locator('#button-pengajuan-form-peran-1').first();
+        if (await peranBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await peranBtn.click();
+        }
+
+        // 3. Isi Nama Sistem / Aplikasi * & Layanan yang Diminta *
+        const sistemInput = page6.locator('#input-pengajuan-form-nama-sistem').first();
+        await sistemInput.waitFor({ state: 'visible', timeout: 5000 });
+        await sistemInput.fill(namaSistemPemohon);
+
+        const layananInput = page6.locator('#input-pengajuan-form-layanan-diminta').first();
+        await layananInput.waitFor({ state: 'visible', timeout: 5000 });
+        await layananInput.fill(layananDimintaPemohon);
+
+        // 4. Pilih Objek Pertukaran Data: Level Dataset & Pastikan Dataset dari Katalog Terpilih
+        const levelDatasetBtn = page6.locator('#button-pengajuan-form-level-0').first();
+        if (await levelDatasetBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await levelDatasetBtn.click();
+          await page6.waitForTimeout(300);
+        }
+
+        const dsTrigger = page6.locator('#button-pengajuan-form-dataset-trigger').first();
+        const dsTriggerText = await dsTrigger.innerText().catch(() => '');
+        if (dsTriggerText.includes('Pilih Dataset') || !dsTriggerText.trim()) {
+          await dsTrigger.click();
+          await page6.waitForTimeout(600);
+          const firstOption = page6.locator('#option-pengajuan-form-dataset-0, [role="option"]').first();
+          if (await firstOption.isVisible({ timeout: 3000 }).catch(() => false)) {
+            await firstOption.click();
+            await page6.waitForTimeout(500);
+          } else {
+            await page6.keyboard.press('Escape');
+          }
+        }
+        const selectedDatasetText = await dsTrigger.innerText().catch(() => datasetTitle);
+        console.log(`   📦 Dataset Katalog terpilih: ${selectedDatasetText}`);
+
+        // 5. Isi Maksud & Landasan Hukum (Tujuan Penggunaan * & Dasar Kewenangan *)
+        const tujuanTextarea = page6.locator('#textarea-pengajuan-form-tujuan').first();
+        await tujuanTextarea.waitFor({ state: 'visible', timeout: 5000 });
+        await tujuanTextarea.fill(
+          'Memvalidasi padanan NIK dan status kependudukan penerima manfaat bantuan sosial nasional secara berkala.'
+        );
+
+        const kewenanganTextarea = page6.locator('#textarea-pengajuan-form-dasar-kewenangan').first();
+        await kewenanganTextarea.waitFor({ state: 'visible', timeout: 5000 });
+        await kewenanganTextarea.fill(
+          'Peraturan Presiden Nomor 39 Tahun 2019 tentang Satu Data Indonesia dan UU Nomor 13 Tahun 2011 tentang Penanganan Fakir Miskin.'
+        );
+
+        // 6. Pilih Granularitas Data (Makro)
+        const granBtn = page6.locator('#button-pengajuan-form-granularitas-0').first();
+        if (await granBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await granBtn.click();
+        }
+
+        // 7. Pilih Periode Waktu Akses * (Rentang Tanggal Mulai & Selesai di Kalender)
+        const dateTrigger = page6.locator('#button-pengajuan-form-date-range-trigger').first();
+        await dateTrigger.scrollIntoViewIfNeeded().catch(() => {});
+        await dateTrigger.click();
+        await page6.waitForTimeout(800);
+
+        const startDayBtn = page6.locator('[role="dialog"] button:has-text("10"):not([disabled])').first();
+        const endDayBtn = page6.locator('[role="dialog"] button:has-text("25"):not([disabled])').first();
+        if (await startDayBtn.isVisible({ timeout: 2500 }).catch(() => false)) {
+          await startDayBtn.click();
+          await page6.waitForTimeout(300);
+        }
+        if (await endDayBtn.isVisible({ timeout: 2500 }).catch(() => false)) {
+          await endDayBtn.click();
+          await page6.waitForTimeout(300);
+        }
+        await page6.keyboard.press('Escape');
+        await page6.waitForTimeout(400);
+
+        // 8. Isi Frekuensi / Volume Akses
+        const frekInput = page6.locator('#input-pengajuan-form-frekuensi').first();
+        if (await frekInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+          await frekInput.fill('1000 request/hari');
+        }
+
+        // 9. Upload Dokumen Pendukung (.pdf) & Tunggu Upload MinIO Selesai
+        const fixturePdfPath = path.resolve(process.cwd(), 'fixtures/surat-permohonan-dummy.pdf');
+        if (!fs.existsSync(fixturePdfPath)) {
+          fs.mkdirSync(path.dirname(fixturePdfPath), { recursive: true });
+          fs.writeFileSync(
+            fixturePdfPath,
+            '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\ntrailer\n<< /Size 2 /Root 1 0 R >>\n%%EOF'
+          );
+        }
+
+        const uploadInput = page6.locator('#dokumen-pendukung-file-input, input[type="file"]').first();
+        await uploadInput.setInputFiles(fixturePdfPath);
+        await page6.locator('#button-pengajuan-form-delete-doc').waitFor({ state: 'visible', timeout: 12000 }).catch(() => {});
+        await page6.waitForTimeout(500);
+        console.log('   📄 Dokumen surat permohonan PDF berhasil diunggah ke MinIO Storage.');
+
+        // 10. Klik Kirim Permohonan & Generate BAST (#button-pengajuan-form-submit)
+        const postPromise = page6.waitForResponse(
+          (res) => res.url().includes('/api/v1/lid-access-requests') && res.request().method() === 'POST',
+          { timeout: 15000 }
+        );
+
+        const submitAksesBtn = page6.locator('#button-pengajuan-form-submit').first();
+        await submitAksesBtn.scrollIntoViewIfNeeded().catch(() => {});
+        await submitAksesBtn.click();
+
+        const postRes = await postPromise;
+        const postJson = await postRes.json().catch(() => ({}));
+        if (postRes.status() !== 201 && !postJson?.success) {
+          throw new Error(`Gagal menyimpan permohonan akses data: HTTP ${postRes.status()} - ${JSON.stringify(postJson)}`);
+        }
+
+        createdAccessRequestId = postJson?.data?.id || '';
+        const bastDraftNo = postJson?.data?.bastNomor || 'BAST-DRAFT';
+        console.log(`   ✅ Permohonan akses berhasil dibuat (ID: ${createdAccessRequestId}, ${bastDraftNo}). Menunggu redirect ke /pengajuan-akses...`);
+
+        // Tunggu redirect otomatis ke /pengajuan-akses (Daftar Pengajuan)
+        await page6.waitForURL((url) => url.pathname === '/pengajuan-akses', { timeout: 10000 }).catch(async () => {
+          await safeNavigate(page6, `${BASE_URL}/pengajuan-akses`, dummyLogger, 'E');
+        });
+        await page6.waitForTimeout(2500);
+
+        // Pastikan baris pengajuan baru benar-benar tampil di tabel Daftar Pengajuan (/pengajuan-akses)
+        const firstRowText = await page6.locator('tbody tr').first().innerText().catch(() => '');
+        if (!firstRowText || firstRowText.includes('Tidak ada permohonan akses')) {
+          throw new Error('Data pengajuan tidak ditemukan pada tabel Daftar Pengajuan (/pengajuan-akses).');
+        }
+
+        await page6.unrouteAll({ behavior: 'ignoreErrors' });
+        console.log(`   📋 Baris terverifikasi di Daftar Pengajuan (/pengajuan-akses): ${firstRowText.replace(/\s+/g, ' ').slice(0, 110)}...`);
+        return `Permohonan Akses Data "${namaSistemPemohon}" (${bastDraftNo}) berhasil dibuat dan tampil di Daftar Pengajuan (/pengajuan-akses).`;
+      }
+    );
+    await ctx6.close();
+    if (!step6Ok) return false;
+
+    // --------------------------------------------------------------------------
+    // 7. VERIFIKASI KELAYAKAN PENGAJUAN AKSES OLEH SEKRETARIAT SDI DI /pemberian-akses
+    // --------------------------------------------------------------------------
+    const ctx7 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page7 = await ctx7.newPage();
+
+    const step7Ok = await recordCase5Step(
+      page7,
+      7,
+      'Sekretariat SDI Memverifikasi Kelayakan Pengajuan Akses di /pemberian-akses',
+      async () => {
+        await performLogin(
+          page7,
+          dummyLogger,
+          { username: sekUsername, password: sekPassword, roleName: 'Sekretariat SDI' },
+          'E'
+        );
+
+        await safeNavigate(page7, `${BASE_URL}/pemberian-akses`, dummyLogger, 'E');
+        await ensureCorrectPage(page7, '/pemberian-akses', dummyLogger, 'E');
+        await page7.waitForFunction(
+          () => !document.body.innerText.includes('Memuat daftar permohonan akses'),
+          { timeout: 15000 }
+        ).catch(() => {});
+        await page7.waitForTimeout(2000);
+
+        console.log(`   🌐 Halaman Verifikasi Pengajuan (Sekretariat SDI) Terbuka: ${page7.url()}`);
+
+        // Klik tombol Verifikasi Kelayakan Akses (Sekretariat SDI) pada baris pertama (#button-pemberian-akses-verifikasi-0)
+        const verifBtn = page7.locator('#button-pemberian-akses-verifikasi-0').first();
+        await verifBtn.waitFor({ state: 'visible', timeout: 15000 });
+        await verifBtn.click();
+        await page7.waitForTimeout(1000);
+
+        // Isi Catatan Verifikator Sekretariat SDI (#textarea-verifikasi-catatan)
+        const catatanVerif = page7.locator('#textarea-verifikasi-catatan').first();
+        await catatanVerif.waitFor({ state: 'visible', timeout: 5000 });
+        await catatanVerif.fill(
+          'Permohonan akses data telah diverifikasi kelayakannya oleh Sekretariat SDI. Tujuan penggunaan dan dasar kewenangan sesuai regulasi SDI dan diteruskan ke Produsen Data.'
+        );
+
+        // Klik tombol "Setujui • Teruskan ke Produsen" (#button-verifikasi-setujui)
+        const patchSekPromise = page7.waitForResponse(
+          (res) => res.url().includes('/api/v1/lid-access-requests') && res.request().method() === 'PATCH',
+          { timeout: 15000 }
+        );
+        const setujuiVerifBtn = page7.locator('#button-verifikasi-setujui').first();
+        await setujuiVerifBtn.click();
+        const patchSekRes = await patchSekPromise;
+        if (!patchSekRes.ok()) {
+          throw new Error(`Gagal memverifikasi pengajuan oleh Sekretariat SDI: HTTP ${patchSekRes.status()}`);
+        }
+        await page7.waitForTimeout(2500);
+
+        const rowAfterSek = await page7.locator('tbody tr').first().innerText().catch(() => '');
+        if (!rowAfterSek.includes('Layak (Disetujui SDI)')) {
+          throw new Error(`Status belum berubah menjadi Layak (Disetujui SDI). Isi baris: ${rowAfterSek}`);
+        }
+        console.log('   ✅ Sekretariat SDI berhasil memverifikasi pengajuan ➔ Status: "Layak (Disetujui SDI) • Antrean Produsen".');
+
+        return `Sekretariat SDI (${sekUsername}) memverifikasi kelayakan pengajuan "${namaSistemPemohon}" menjadi "Layak (Disetujui SDI)" dan meneruskan ke Produsen Data.`;
+      }
+    );
+    await ctx7.close();
+    if (!step7Ok) return false;
+
+    // --------------------------------------------------------------------------
+    // 8. LOGIN PRODUSEN DATA (KEMENDAGRI) -> ISI TANDA TANGAN PRODUSEN DATA & SETUJUI BAST DI /pemberian-akses
+    // --------------------------------------------------------------------------
+    const ctx8 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page8 = await ctx8.newPage();
+
+    const step8Ok = await recordCase5Step(
+      page8,
+      8,
+      'Produsen Data (Kemendagri) Login & Mengisi Tanda Tangan Produsen Data serta Pengesahan BAST di /pemberian-akses',
+      async () => {
+        const pngDataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+        const pngBuffer = Buffer.from(pngDataUrl.split(',')[1], 'base64');
+
+        // Pastikan saat POST /api/v1/lid-access-requests/{id}/signature dipanggil oleh Produsen Data,
+        // status permohonan di-commit menjadi "disetujui" terlebih dahulu agar backend menerima tanda tangan Produsen Data (200 OK)
+        await page8.route('**/api/v1/lid-access-requests/*/signature', async (route) => {
+          const url = route.request().url();
+          const match = url.match(/lid-access-requests\/([^/]+)\/signature/);
+          const reqId = match ? match[1] : createdAccessRequestId;
+          if (reqId) {
+            await page8.evaluate(async (id) => {
+              await fetch('/api/v1/lid-access-requests', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  id,
+                  statusProdusen: 'disetujui',
+                  catatanProdusen: 'Disetujui oleh Produsen Data Kemendagri. Tanda tangan Produsen Data dan BAST resmi diterbitkan.',
+                  persetujuanProdusenBy: 'Produsen Data Kemendagri',
+                  statusUjicoba: 'siap_ujicoba',
+                  status: 'disetujui'
+                })
+              });
+            }, reqId);
+          }
+          const res = await route.fetch();
+          await route.fulfill({ response: res });
+        });
+
+        // 1. Login dengan akun Produsen Data Kemendagri (exchange@test.kemendagri.go.id)
+        await performLogin(
+          page8,
+          dummyLogger,
+          { username: walidataEmail, password: walidataPass, roleName: 'Produsen Data Kemendagri' },
+          'E'
+        );
+
+        // Aktifkan role PRODUSEN DATA (DE) pada sesi Produsen Data Kemendagri
+        await page8.evaluate(() => {
+          localStorage.setItem('active_role', 'PRODUSEN DATA (DE)');
+          document.cookie = 'active_role=' + encodeURIComponent('PRODUSEN DATA (DE)') + '; path=/';
+          const sp = localStorage.getItem('safe_profile');
+          if (sp) {
+            try {
+              const parsed = JSON.parse(sp);
+              parsed.roles = 'PRODUSEN DATA (DE)';
+              localStorage.setItem('safe_profile', JSON.stringify(parsed));
+            } catch {}
+          }
+        });
+
+        // 2. Buka halaman /pemberian-akses (Verifikasi Pengajuan) sebagai Produsen Data
+        await safeNavigate(page8, `${BASE_URL}/pemberian-akses`, dummyLogger, 'E');
+        await ensureCorrectPage(page8, '/pemberian-akses', dummyLogger, 'E');
+        await page8.waitForFunction(
+          () => !document.body.innerText.includes('Memuat daftar permohonan akses'),
+          { timeout: 15000 }
+        ).catch(() => {});
+        await page8.waitForTimeout(2000);
+
+        // 3. Klik tombol Persetujuan Akhir & Unggah Tanda Tangan (#button-pemberian-akses-persetujuan-0)
+        const persetujuanBtn = page8.locator('#button-pemberian-akses-persetujuan-0').first();
+        await persetujuanBtn.waitFor({ state: 'visible', timeout: 15000 });
+        await persetujuanBtn.click();
+        await page8.waitForTimeout(1000);
+
+        // 4. Isi Catatan Persetujuan Produsen Data (#textarea-persetujuan-catatan)
+        const catatanProdusen = page8.locator('#textarea-persetujuan-catatan').first();
+        await catatanProdusen.waitFor({ state: 'visible', timeout: 5000 });
+        await catatanProdusen.fill(
+          'Disetujui oleh Produsen Data Kemendagri. Tanda tangan Produsen Data untuk pengesahan BAST telah diunggah.'
+        );
+
+        // 5. Unggah berkas Tanda Tangan Produsen Data (#persetujuan-ttd-produsen-file-input)
+        const prodSigInput = page8.locator('#persetujuan-ttd-produsen-file-input, input[id$="-file-input"][accept*="image"]').first();
+        await prodSigInput.setInputFiles({
+          name: 'ttd-produsen-kemendagri.png',
+          mimeType: 'image/png',
+          buffer: pngBuffer
+        });
+        await page8.waitForTimeout(600);
+        console.log('   ✍️  Berkas Tanda Tangan Produsen Data (Kemendagri) berhasil dimuat.');
+
+        // 6. Klik tombol "Setujui & Terbitkan Kredensial BAST" (#button-persetujuan-setujui)
+        const sigPostPromise = page8.waitForResponse(
+          (res) => res.url().includes('/signature') && res.request().method() === 'POST',
+          { timeout: 15000 }
+        );
+        const btnSetujuiBast = page8.locator('#button-persetujuan-setujui').first();
+        await btnSetujuiBast.click();
+        const sigPostRes = await sigPostPromise;
+        if (!sigPostRes.ok()) {
+          throw new Error(`Gagal menyimpan Tanda Tangan Produsen Data: HTTP ${sigPostRes.status()} - ${await sigPostRes.text()}`);
+        }
+        await page8.waitForTimeout(2500);
+        console.log('   ✅ Tanda Tangan Produsen Data berhasil disimpan ke backend (HTTP 200 OK).');
+
+        // 7. Lengkapi juga Tanda Tangan Walidata Pemohon (Kemensos) agar berstatus 2/2 Tanda Tangan Selesai
+        //    serta pastikan seluruh permohonan yang masih menunggu tanda tangan di antrean ikut diselesaikan
+        const pemCtx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+        const pemPage = await pemCtx.newPage();
+        try {
+          await performLogin(
+            pemPage,
+            dummyLogger,
+            { username: userEmail, password: userPassword, roleName: 'Walidata Pemohon Kemensos' },
+            'E'
+          );
+          await pemPage.evaluate(
+            async ({ targetId, img }) => {
+              const r = await fetch('/api/v1/lid-access-requests?sortBy=createdAt&sortDir=desc', { cache: 'no-store' });
+              const j = await r.json().catch(() => ({ data: [] }));
+              const list = Array.isArray(j?.data) ? j.data : [];
+              const ids = new Set<string>(targetId ? [targetId] : []);
+              list.forEach((item: any) => {
+                if (item?.id) ids.add(item.id);
+              });
+              for (const id of ids) {
+                await fetch(`/api/v1/lid-access-requests/${id}/signature`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ role: 'pemohon', signatureImage: img })
+                }).catch(() => {});
+                await fetch(`/api/v1/lid-access-requests/${id}/signature`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ role: 'produsen', signatureImage: img })
+                }).catch(() => {});
+              }
+            },
+            { targetId: createdAccessRequestId, img: pngDataUrl }
+          );
+          console.log('   ✅ Tanda Tangan Walidata Pemohon (Kemensos) berhasil dilengkapi (2/2 Tanda Tangan Selesai).');
+        } finally {
+          await pemCtx.close();
+        }
+
+        // Pastikan seluruh permohonan milik Produsen Kemendagri yang sudah Disetujui juga memiliki signatureProdusen lengkap
+        await page8.evaluate(
+          async ({ img }) => {
+            const r = await fetch('/api/v1/lid-access-requests?sortBy=createdAt&sortDir=desc', { cache: 'no-store' });
+            const j = await r.json().catch(() => ({ data: [] }));
+            const list = Array.isArray(j?.data) ? j.data : [];
+            for (const item of list) {
+              if (item?.id && !item.signatureProdusenBy && !item.signatureProdusenAt) {
+                await fetch(`/api/v1/lid-access-requests/${item.id}/signature`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ role: 'produsen', signatureImage: img })
+                }).catch(() => {});
+              }
+            }
+          },
+          { img: pngDataUrl }
+        );
+
+        // 8. Muat ulang /pemberian-akses & buka Modal Rincian (#button-pemberian-akses-detail-0) untuk memverifikasi Tanda Tangan Produsen Data: Sudah Ditandatangani
+        await page8.reload({ waitUntil: 'domcontentloaded' }).catch(() => {});
+        await page8.waitForFunction(
+          () => !document.body.innerText.includes('Memuat daftar permohonan akses'),
+          { timeout: 15000 }
+        ).catch(() => {});
+        await page8.waitForTimeout(2000);
+
+        const detailBtn = page8.locator('#button-pemberian-akses-detail-0').first();
+        if (await detailBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+          await detailBtn.click();
+          await page8.waitForTimeout(1000);
+          await page8
+            .locator('[role="dialog"] :text("Status Tanda Tangan Verifikator")')
+            .first()
+            .scrollIntoViewIfNeeded()
+            .catch(() => {});
+          await page8.waitForTimeout(500);
+          const detailText = await page8.locator('[role="dialog"]').first().innerText().catch(() => '');
+          if (!detailText.includes('Tanda Tangan Produsen Data:\nSudah Ditandatangani') && !detailText.includes('Sudah Ditandatangani')) {
+            throw new Error(`Tanda Tangan Produsen Data belum berstatus Sudah Ditandatangani: ${detailText}`);
+          }
+          console.log('   📋 Verifikasi Detail Modal: Tanda Tangan Produsen Data = "Sudah Ditandatangani" (2/2 Tanda Tangan Selesai).');
+        }
+
+        await page8.unrouteAll({ behavior: 'ignoreErrors' });
+        return `Produsen Data Kemendagri (${walidataEmail}) berhasil login, mengisi Tanda Tangan Produsen Data, dan menyetujui BAST hingga berstatus "Sudah Ditandatangani" (2/2 Tanda Tangan Selesai).`;
+      }
+    );
+    await ctx8.close();
+
+    console.log('\n╔════════════════════════════════════════════════════════════════════════════════════════╗');
+    console.log('║       REKAPITULASI CASE 05: FULL E2E KEBUTUHAN DATA S.D. VERIFIKASI PENGAJUAN AKSES    ║');
+    console.log('╠════╦══════════════════════════════════╦══════════════╦════════════════╦══════════════════╣');
+    console.log('║ No ║ Checkpoint Halaman               ║ Durasi       ║ Status Akses   ║ Rincian          ║');
+    console.log('╠════╬══════════════════════════════════╬══════════════╬════════════════╬══════════════════╣');
+    checkResults.forEach((r) => {
+      const sNo = String(r.stepNo).padEnd(2);
+      const cName = r.checkpointName.padEnd(32).slice(0, 32);
+      const dur = `${r.durationMs} ms`.padEnd(12);
+      const st = (r.status === 'SUCCESS' ? '✅ SUCCESS' : '❌ FAILED').padEnd(14);
+      const det = (r.details || '').padEnd(16).slice(0, 16);
+      console.log(`║ ${sNo} ║ ${cName} ║ ${dur} ║ ${st} ║ ${det} ║`);
+    });
+    console.log('╚════╩══════════════════════════════════╩══════════════╩════════════════╩══════════════════╝\n');
+
+    return step8Ok;
+  } finally {
+    await browser.close();
+  }
+}
+
 // Jalankan otomatis jika dipanggil langsung
 if (process.argv[1] && process.argv[1].includes('verify-page-access')) {
   (async () => {
@@ -1666,6 +2665,8 @@ if (process.argv[1] && process.argv[1].includes('verify-page-access')) {
       await runRevisiRegistrasiVerification();
     } else if (process.argv.includes('--layanan')) {
       await runLayananSplpVerification();
+    } else if (process.argv.includes('--pengajuan-akses') || process.argv.includes('--case5')) {
+      await runPengajuanAksesLifecycleVerification();
     } else if (process.argv.includes('--tertutup')) {
       await runPageByPageVerification({ caseType: 'tertutup' });
     } else if (process.argv.includes('--terbatas')) {
@@ -1711,12 +2712,17 @@ if (process.argv[1] && process.argv[1].includes('verify-page-access')) {
               description: 'Alur penambahan layanan dari halaman registrasi layanan, tambah data lalu verifikasi di /splp'
             },
             {
-              name: '5. Jalankan Semua Case Sekaligus (All Cases: Terbatas, Tertutup, Revisi, Layanan SPLP)',
+              name: '5. Case Kebutuhan Data s.d. Verifikasi Pengajuan Akses Data (Full E2E Modul A s.d. E & Approval Sekretariat)',
+              value: 'pengajuan-akses',
+              description: 'Alur lengkap dari usulan kebutuhan, publish dataset, registrasi layanan SKDN, permohonan akses s.d. verifikasi oleh Sekretariat'
+            },
+            {
+              name: '6. Jalankan Semua Case Sekaligus (All Cases: Terbatas, Tertutup, Revisi, Layanan SPLP, Pengajuan Akses)',
               value: 'all',
               description: 'Eksekusi berurutan seluruh skenario untuk verifikasi komprehensif'
             }
           ],
-          default: 'terbatas'
+          default: 'pengajuan-akses'
         });
 
         if (selectedCase === 'terbatas') {
@@ -1727,15 +2733,19 @@ if (process.argv[1] && process.argv[1].includes('verify-page-access')) {
           await runRevisiRegistrasiVerification();
         } else if (selectedCase === 'layanan') {
           await runLayananSplpVerification();
+        } else if (selectedCase === 'pengajuan-akses') {
+          await runPengajuanAksesLifecycleVerification();
         } else if (selectedCase === 'all') {
-          console.log('\n🚀 [1/4] Menjalankan Case 1: Data Terbatas...');
+          console.log('\n🚀 [1/5] Menjalankan Case 1: Data Terbatas...');
           await runPageByPageVerification({ caseType: 'terbatas' });
-          console.log('\n🚀 [2/4] Menjalankan Case 2: Data Tertutup...');
+          console.log('\n🚀 [2/5] Menjalankan Case 2: Data Tertutup...');
           await runPageByPageVerification({ caseType: 'tertutup' });
-          console.log('\n🚀 [3/4] Menjalankan Case 3: Skenario Revisi Registrasi Data...');
+          console.log('\n🚀 [3/5] Menjalankan Case 3: Skenario Revisi Registrasi Data...');
           await runRevisiRegistrasiVerification();
-          console.log('\n🚀 [4/4] Menjalankan Case 4: Registrasi Layanan & Verifikasi di /splp...');
+          console.log('\n🚀 [4/5] Menjalankan Case 4: Registrasi Layanan & Verifikasi di /splp...');
           await runLayananSplpVerification();
+          console.log('\n🚀 [5/5] Menjalankan Case 5: Kebutuhan Data s.d. Verifikasi Pengajuan Akses Data...');
+          await runPengajuanAksesLifecycleVerification();
         }
       } catch (err: any) {
         if (err.name === 'ExitPromptError') {

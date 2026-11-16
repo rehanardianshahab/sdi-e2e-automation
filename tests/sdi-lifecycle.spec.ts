@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test';
 import {
   runPageByPageVerification,
   runRevisiRegistrasiVerification,
-  runLayananSplpVerification
+  runLayananSplpVerification,
+  runPengajuanAksesLifecycleVerification
 } from '../src/flows/verify-page-access.js';
 
 test.describe('Portal Satu Data Indonesia - Lifecycle & Case Verifications', () => {
@@ -26,6 +27,11 @@ test.describe('Portal Satu Data Indonesia - Lifecycle & Case Verifications', () 
 
   test('Case 4: Registrasi Layanan SKDN & Pindah ke /splp untuk Verifikasi Data', async () => {
     const isSuccess = await runLayananSplpVerification();
+    expect(isSuccess).toBeTruthy();
+  });
+
+  test('Case 5: Alur Penuh Kebutuhan Data s.d. Verifikasi Pengajuan Akses Data oleh Sekretariat', async () => {
+    const isSuccess = await runPengajuanAksesLifecycleVerification();
     expect(isSuccess).toBeTruthy();
   });
 });

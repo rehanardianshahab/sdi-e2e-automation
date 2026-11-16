@@ -30,7 +30,7 @@ async function testEntitas255LiveFlow() {
       { username: 'exchange@test.kemendagri.go.id', password: '123456789', roleName: 'Walidata Kemendagri' },
       'AUTH'
     );
-    await safeNavigate(waliPage, `${BASE_URL}/registrasi/data`, dummyLogger, 'CHECK');
+    await safeNavigate(waliPage, `${BASE_URL}/registrasi/data`, dummyLogger, 'C');
     await waliPage.waitForTimeout(2000);
 
     const existingRegBtn = waliPage.locator('#button-registrasi-data-registrasikan-0, button[title="Registrasikan Data"]').first();

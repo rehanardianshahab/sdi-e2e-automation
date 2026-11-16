@@ -29,9 +29,9 @@ Output HARUS JSON objek lengkap dengan 4 key utama: "kebutuhanData", "registrasi
 
 === ATURAN MUTLAK INSTANSI ===
 Instansi yang diizinkan di seluruh payload HANYA DUA:
-1. Kementerian Sosial (Kemensos)
-2. Kementerian Dalam Negeri (Kemendagri)
-DILARANG KERAS memunculkan atau memilih instansi lain (seperti Kemenkes, BPOM, BPS, Kominfo, dll) karena akun testing yang tersedia HANYA Kemensos dan Kemendagri!
+1. Kementerian Dalam Negeri (Kemendagri) - sebagai Pengusul / Pemohon
+2. Kementerian Pemuda dan Olahraga (Kemenpora) - sebagai Target Instansi / Walidata & Produsen Data
+DILARANG KERAS memunculkan atau memilih instansi lain di luar Kemendagri dan Kemenpora!
 
 === KONTEKS HUBUNGAN INSTANSI PENGUSUL & TARGET ===
 Instansi Pengusul yang login : ${instansiCtx.loginInstansiName} (${instansiCtx.loginEmail})
@@ -42,32 +42,32 @@ Instansi Target yang dituju  : ${instansiCtx.targetInstansi}
 
 Pastikan seluruh field mematuhi batasan karakter dan ENUM berikut secara ketat:
 1. kebutuhanData:
-   - namaData: maksimal 100 karakter.
+   - namaData: maksimal 100 karakter (tema kepemudaan, wirausaha muda, prestasi olahraga daerah, atau sarana olahraga).
    - instansiIndikasi: "${instansiCtx.targetInstansi}".
    - produsenData: Unit kerja terkait di ${instansiCtx.targetInstansi}.
    - waliData: Unit walidata di ${instansiCtx.targetInstansi}.
-   - tujuanPengusulan: maksimal 255 karakter (sinkronisasi data lintas instansi ${instansiCtx.loginInstansiName} dengan ${instansiCtx.targetInstansi}).
+   - tujuanPengusulan: maksimal 255 karakter (sinkronisasi data kepemudaan & olahraga lintas instansi ${instansiCtx.loginInstansiName} dengan ${instansiCtx.targetInstansi}).
    - catatanReviewSekretariat: persetujuan usulan.
 2. registrasiDataset:
-   - step1Informasi.deskripsi: ringkasan ruang lingkup dataset, MAKSIMAL 255 KARAKTER.
-   - step1Informasi.tema: salah satu dari ["Ekonomi dan Industri", "Lingkungan dan Sumber Daya Alam", "Budaya dan Agama", "Perlindungan Sosial dan Kesehatan", "Pembangunan Daerah", "Pendidikan dan Tenaga Kerja", "Pemerintahan Umum", "Pendukung Umum", "Ketertiban Umum dan Keselamatan", "Pertahanan dan Luar Negeri"].
+   - step1Informasi.deskripsi: ringkasan ruang lingkup dataset kepemudaan & olahraga Kemenpora, MAKSIMAL 255 KARAKTER.
+   - step1Informasi.tema: salah satu dari ["Pembangunan Daerah", "Budaya dan Agama", "Pendidikan dan Tenaga Kerja", "Pemerintahan Umum"].
    - step1Informasi.jenisData: salah satu dari ["Data Statistik", "Data Spasial", "Data Keuangan", "Data Induk", "Kode Referensi", "Data Transaksi", "Data lainnya"].
    - step1Informasi.klasifikasiRisiko: "Terbuka" | "Terbatas" | "Tertutup".
    - step1Informasi.frekuensi: "Real-time" | "Harian" | "Mingguan" | "Bulanan" | "Triwulan" | "Tahunan".
    - step1Informasi.formatData: array minimal 2 dari ["JSON", "CSV", "XML", "REST API", "SOAP", "Excel"].
    - dampakKerahasiaan, dampakIntegritas, dampakKetersediaan: "rendah" | "sedang" | "tinggi".
-   - step2Entitas: 2 entitas dengan namaEntitas snake_case dan definisi.
+   - step2Entitas: 2 entitas dengan namaEntitas snake_case dan definisi (maksimal 255 karakter).
    - step3KamusData: minimal 3 elemen yang merujuk ke namaEntitas di step2Entitas, minimal 1 elemen isPrimaryKey: true, tipeData dari ["String", "String (Code)", "Integer", "Boolean", "Float", "Date", "DateTime", "Text"], sifatKewajiban dari ["Mandatory", "Optional"], idStandar dari ["Standar Data Statistik Nasional (SDSN)", "Katalog Unsur Geografi Indonesia (KUGI)", "Standar Metadata Kesehatan (Kemenkes)", "Kode Wilayah Administrasi Pemerintahan (Kemendagri)", "Standar Klasifikasi Baku Lapangan Usaha (KBLI)", "Tidak menggunakan data rujukan"].
 3. registrasiLayananLID:
    - apiTitle, apiName, apiDesc, exchangeMethod: "REST API", format: "JSON", keamanan: "Melalui Gateway SPLP (Kredensial Khusus)", endpointUrl, documentationUrl, version: "1.0.0", slaAvailability: "99.9%".
 4. pengajuanAksesLID:
    - classificationType: "terbatas" | "terbuka",
-   - peranIndex: 0,
+   - peranIndex: 1,
    - peranLabel: "Produsen Data (Mendukung produksi data resmi instansi)",
-   - namaSistem: Nama sistem pemohon di ${instansiCtx.loginInstansiName},
-   - layananDiminta: nama layanan,
-   - levelData: "elemen" | "entitas" | "dataset",
-   - tujuanPenggunaan, dasarKewenangan, granularitas, periodeAwal: "2025", periodeAkhir: "2026", frekuensiAkses: "Bulanan", metodePertukaran: "Web Service / REST API (SPLP)", komitmenKeamanan.
+   - namaSistem: Nama sistem pemohon di ${instansiCtx.loginInstansiName} (misal SIPD Kemendagri),
+   - layananDiminta: nama layanan interoperabilitas Kemenpora,
+   - levelData: "dataset",
+   - tujuanPenggunaan, dasarKewenangan, granularitas, periodeAwal: "2026-11-10", periodeAkhir: "2026-11-25", frekuensiAkses: "1000 request/hari", metodePertukaran: "Web Service / REST API (SPLP)", komitmenKeamanan.
     `.trim();
 
     const response = await ai.models.generateContent({
@@ -81,7 +81,6 @@ Pastikan seluruh field mematuhi batasan karakter dan ENUM berikut secara ketat:
     const text = response.text;
     if (!text) return sanitizePayload(FALLBACK_FAKE_DATA, userEmail);
     const parsed = JSON.parse(text) as Partial<SdiAutomationPayload>;
-    // Safeguard: deep merge dengan fallback data untuk menghindari undefined property
     return sanitizePayload(parsed, userEmail);
   } catch (err: any) {
     console.error(`[Generator] Gagal menghubungi Gemini API: ${err.message}. Menggunakan fallback fake data.`);

@@ -11,6 +11,7 @@
     "check:tertutup": "tsx src/flows/verify-page-access.ts --tertutup",
     "check:revisi": "tsx src/flows/verify-page-access.ts --revisi",
     "check:layanan": "tsx src/flows/verify-page-access.ts --layanan",
+    "check:pengajuan-akses": "tsx src/flows/verify-page-access.ts --pengajuan-akses",
     "check:all": "tsx src/flows/verify-page-access.ts --all",
     "test": "playwright test",
     "test:ui": "playwright test --ui",

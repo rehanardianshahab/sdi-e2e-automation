@@ -4,7 +4,8 @@ import { select, confirm } from '@inquirer/prompts';
 import {
   runPageByPageVerification,
   runRevisiRegistrasiVerification,
-  runLayananSplpVerification
+  runLayananSplpVerification,
+  runPengajuanAksesLifecycleVerification
 } from '../src/flows/verify-page-access.js';
 
 export interface QAFlowStep {
@@ -226,6 +227,86 @@ export const QA_FLOW_SPECS: QACaseSpec[] = [
         actionSummary: 'Langsung berpindah ke rute /splp, membuka tab "Verifikasi Layanan", memverifikasi data layanan SKDN yang baru disimpan muncul di antrean, lalu klik "Approve LID".',
         uiElements: ['Rute /splp', '#button-splp-tab-verifikasi', 'tbody tr:first-child button:has-text("Approve LID")'],
         expectedResult: 'Data layanan terverifikasi resmi pada portal SPLP dan berstatus Approval LID.'
+      }
+    ]
+  },
+  {
+    id: 'CASE-05',
+    title: 'Case Full E2E Kebutuhan Data s.d. Verifikasi Pengajuan Akses Data (LID)',
+    category: 'Siklus Hidup Lengkap Antarinstansi (A s.d. E)',
+    description: 'Alur komprehensif mulai dari pengajuan kebutuhan data oleh Kemensos, penetapan oleh Sekretariat, registrasi dataset & publish, registrasi layanan SKDN, permohonan akses data (LID), hingga verifikasi dan approval oleh Sekretariat SDI.',
+    steps: [
+      {
+        stepNo: 1,
+        actor: 'Pengusul Data (Kemensos)',
+        account: 'exchange@test.kemensos.go.id',
+        pageRoute: '/perencanaan/kebutuhan-data',
+        actionSummary: 'Login Kemensos & Mengajukan usulan kebutuhan data baru (Klasifikasi Terbatas) dengan instansi target Kemendagri.',
+        uiElements: ['#button-kebutuhan-ajukan', '#input-kebutuhan-form-nama-data', 'select target instansi KEMENDAGRI', '#button-kebutuhan-form-submit'],
+        expectedResult: 'Usulan baru tercatat di tabel Kebutuhan Data dengan status "Diajukan".'
+      },
+      {
+        stepNo: 2,
+        actor: 'Sekretariat SDI',
+        account: 'Mkalmunawar@gmail.com',
+        pageRoute: '/perencanaan/kebutuhan-data',
+        actionSummary: 'Sekretariat membuka usulan dan menetapkan hasil evaluasi menjadi "Dapat Disediakan".',
+        uiElements: ['button:has-text("Penetapan")', '#input-kebutuhan-detail-catatan-review', '#button-kebutuhan-detail-dapat-disediakan'],
+        expectedResult: 'Status usulan kebutuhan data resmi berubah menjadi "Dapat Disediakan".'
+      },
+      {
+        stepNo: 3,
+        actor: 'Walidata Pengampu (Kemendagri)',
+        account: 'exchange@test.kemendagri.go.id',
+        pageRoute: '/registrasi/data ➔ /dataset-form/baru/[id]',
+        actionSummary: 'Walidata mengisi registrasi dataset: Step 1 (Deskripsi maks 255 karakter, Klasifikasi: Terbatas, Dampak: Sedang, Tema, Frekuensi), Step 2 (Tambah Entitas), Step 3 (Tambah Kamus NIK) & Submit registrasi.',
+        uiElements: ['#button-registrasi-data-registrasikan-0', 'button:has-text("Terbatas")', '#button-dataset-next-step', '#button-dataset-open-confirm-submit', 'checkbox persetujuan'],
+        expectedResult: 'Dataset terdaftar dan status berubah menjadi "Menunggu Validasi".'
+      },
+      {
+        stepNo: 4,
+        actor: 'Sekretariat SDI',
+        account: 'Mkalmunawar@gmail.com',
+        pageRoute: '/registrasi/data (atau /perencanaan/daftar-data) ➔ /dataset-form/review/[id]',
+        actionSummary: 'Sekretariat mereview form registrasi Step 1-3, meninjau kelengkapan metadata, lalu menyetujui dataset.',
+        uiElements: ['#button-registrasi-data-review-0', 'button:has-text("Setujui Dataset (Published)")', 'dialog konfirmasi publish'],
+        expectedResult: 'Dataset berhasil divalidasi dan resmi berstatus "Published".'
+      },
+      {
+        stepNo: 5,
+        actor: 'Walidata Pengampu (Kemendagri)',
+        account: 'exchange@test.kemendagri.go.id',
+        pageRoute: '/registrasi/layanan',
+        actionSummary: 'Mendaftarkan layanan interoperabilitas SKDN pada katalog data dengan mengisi form endpoint dan dokumentasi API.',
+        uiElements: ['#button-layanan-tambah-header', '#button-layanan-platform-skdn', '#input-layanan-form-nama', '#button-layanan-form-submit'],
+        expectedResult: 'Layanan SKDN berhasil tersimpan di katalog layanan interoperabilitas SDI.'
+      },
+      {
+        stepNo: 6,
+        actor: 'Pengusul Data (Kemensos)',
+        account: 'exchange@test.kemensos.go.id',
+        pageRoute: '/pengajuan-akses/tambah ➔ /pengajuan-akses',
+        actionSummary: 'Mengajukan permohonan akses data (LID): pilih Data Terbatas, peran Produsen Data, isi Nama Sistem & Layanan yang Diminta, pilih Dataset dari Katalog, isi Tujuan & Dasar Kewenangan, pilih Rentang Tanggal Akses, unggah Surat Permohonan (.pdf), lalu klik "Kirim Permohonan & Generate BAST" hingga tercatat di Daftar Pengajuan (/pengajuan-akses).',
+        uiElements: ['#button-pengajuan-form-type-terbatas', '#input-pengajuan-form-nama-sistem', '#input-pengajuan-form-layanan-diminta', '#button-pengajuan-form-dataset-trigger', '#textarea-pengajuan-form-tujuan', '#textarea-pengajuan-form-dasar-kewenangan', '#button-pengajuan-form-date-range-trigger', '#dokumen-pendukung-file-input', '#button-pengajuan-form-submit'],
+        expectedResult: 'Permohonan akses data berhasil dibuat (HTTP 201 Created, BAST-DRAFT terbit) dan tampil di tabel Daftar Pengajuan (/pengajuan-akses).'
+      },
+      {
+        stepNo: 7,
+        actor: 'Sekretariat SDI',
+        account: 'Mkalmunawar@gmail.com',
+        pageRoute: '/pemberian-akses (Verifikasi Pengajuan)',
+        actionSummary: 'Sekretariat SDI membuka /pemberian-akses, mengklik tombol Verifikasi Kelayakan (#button-pemberian-akses-verifikasi-0), mengisi catatan verifikator (#textarea-verifikasi-catatan), dan mengklik "Setujui • Teruskan ke Produsen" (#button-verifikasi-setujui).',
+        uiElements: ['#button-pemberian-akses-verifikasi-0', '#textarea-verifikasi-catatan', '#button-verifikasi-setujui'],
+        expectedResult: 'Status Verifikasi SDI berubah menjadi "Layak (Disetujui SDI)" dan diteruskan ke antrean Produsen Data.'
+      },
+      {
+        stepNo: 8,
+        actor: 'Produsen Data (Kemendagri) & Walidata Pemohon',
+        account: 'exchange@test.kemendagri.go.id (Role: PRODUSEN DATA (DE))',
+        pageRoute: '/pemberian-akses (Persetujuan & Tanda Tangan BAST)',
+        actionSummary: 'Login dengan akun Produsen Data Kemendagri (Role: PRODUSEN DATA (DE)), buka /pemberian-akses, klik tombol Persetujuan Akhir (#button-pemberian-akses-persetujuan-0), isi catatan (#textarea-persetujuan-catatan), unggah berkas Tanda Tangan Produsen Data (#persetujuan-ttd-produsen-file-input), lalu klik "Setujui & Terbitkan Kredensial BAST" (#button-persetujuan-setujui) serta lengkapi tanda tangan pemohon.',
+        uiElements: ['#button-pemberian-akses-persetujuan-0', '#textarea-persetujuan-catatan', '#persetujuan-ttd-produsen-file-input', '#button-persetujuan-setujui', '#button-pemberian-akses-detail-0'],
+        expectedResult: 'Tanda Tangan Produsen Data berstatus "Sudah Ditandatangani", Status Produsen menjadi "Disetujui Produsen (2/2 Tanda Tangan Selesai)", dan BAST resmi diterbitkan.'
       }
     ]
   }
@@ -608,7 +689,8 @@ export async function runQAFlowComparatorCLI() {
         { name: '1. Case 1: Data Terbatas', value: 'terbatas' },
         { name: '2. Case 2: Data Tertutup', value: 'tertutup' },
         { name: '3. Case 3: Revisi Registrasi Data (Tolak ✕ ➔ Edit ➔ Publish ✓)', value: 'revisi' },
-        { name: '4. Case 4: Layanan SKDN & Verifikasi /splp', value: 'layanan' }
+        { name: '4. Case 4: Layanan SKDN & Verifikasi /splp', value: 'layanan' },
+        { name: '5. Case 5: Full E2E Kebutuhan Data s.d. Verifikasi Pengajuan Akses (Approval LID)', value: 'pengajuan-akses' }
       ]
     });
 
@@ -616,6 +698,7 @@ export async function runQAFlowComparatorCLI() {
     else if (caseToRun === 'tertutup') await runPageByPageVerification({ caseType: 'tertutup' });
     else if (caseToRun === 'revisi') await runRevisiRegistrasiVerification();
     else if (caseToRun === 'layanan') await runLayananSplpVerification();
+    else if (caseToRun === 'pengajuan-akses') await runPengajuanAksesLifecycleVerification();
   }
 }
 

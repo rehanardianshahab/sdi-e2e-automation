@@ -3,21 +3,22 @@ import { StepLogger, ModuleCode } from './step-logger.js';
 
 /**
  * Helper untuk menentukan pemetaan instansi pengusul dan instansi target.
- * ATURAN MUTLAK:
- * Hanya dua instansi yang memiliki akun di staging:
- * 1. Kementerian Sosial (Kemensos) - exchange@test.kemensos.go.id
- * 2. Kementerian Dalam Negeri (Kemendagri) - exchange@test.kemendagri.go.id
+ * ATURAN UTAMA:
+ * Pasangan akun utama di staging:
+ * 1. Pengusul: Kementerian Dalam Negeri (Kemendagri) - exchange@test.kemendagri.go.id (instansiId: 36)
+ * 2. Target Instansi (Walidata / Produsen): Kementerian Pemuda dan Olahraga (Kemenpora) - exchange.kemenpora@test.kemenpora.go.id (instansiId: 55)
  *
  * Pemetaan pasangan:
- * - Jika pengusul adalah Kemensos, maka target WAJIB Kemendagri.
- * - Jika pengusul adalah Kemendagri, maka target WAJIB Kemensos.
- * - DILARANG KERAS memilih atau menggunakan instansi selain keduanya!
+ * - Jika pengusul adalah Kemendagri, maka target WAJIB Kemenpora.
+ * - Jika pengusul adalah Kemenpora, maka target WAJIB Kemendagri.
  */
 
 export interface InstansiContext {
   loginEmail: string;
   loginInstansiName: string;
+  loginInstansiId: number;
   targetInstansi: string;
+  targetInstansiId: number;
   targetKeywords: string[];
   targetProdusenData: string;
   targetWaliData: string;
@@ -27,25 +28,27 @@ export interface InstansiContext {
 }
 
 export const ALLOWED_INSTANSI = {
-  KEMENSOS: {
-    name: 'Kementerian Sosial (Kemensos)',
-    targetName: 'KEMENTERIAN SOSIAL',
-    email: 'exchange@test.kemensos.go.id',
-    password: process.env.USER_PENGUSUL_PASSWORD || '123456789',
-    keywords: ['Kementerian Sosial', 'Kemensos', 'KEMENSOS', 'Sosial'],
-    produsenData: 'Direktorat Jenderal Pemberdayaan Sosial',
-    waliData: 'Pusat Data dan Informasi Kesejahteraan Sosial (Pusdatin Kesos)',
-    topic: 'Data Terpadu Kesejahteraan Sosial (DTKS) Kemensos untuk Sinkronisasi Bantuan Daerah'
-  },
   KEMENDAGRI: {
+    id: 36,
     name: 'Kementerian Dalam Negeri (Kemendagri)',
     targetName: 'KEMENTERIAN DALAM NEGERI',
     email: 'exchange@test.kemendagri.go.id',
-    password: process.env.USER_WALIDATA_PASSWORD || '123456789',
+    password: process.env.USER_PENGUSUL_PASSWORD || '123456789',
     keywords: ['Kementerian Dalam Negeri', 'Kemendagri', 'KEMENDAGRI', 'Dalam Negeri'],
     produsenData: 'Direktorat Jenderal Kependudukan dan Pencatatan Sipil',
     waliData: 'Pusat Data dan Informasi Kemendagri',
-    topic: 'Data Terpadu Kependudukan dan Identitas Wilayah Kemendagri untuk Validasi Penerima Manfaat'
+    topic: 'Data Terpadu Kependudukan dan Identitas Wilayah Kemendagri untuk Sinkronisasi Kepemudaan Nasional'
+  },
+  KEMENPORA: {
+    id: 55,
+    name: 'Kementerian Pemuda dan Olahraga (Kemenpora)',
+    targetName: 'KEMENTERIAN PEMUDA DAN OLAHRAGA',
+    email: 'exchange.kemenpora@test.kemenpora.go.id',
+    password: process.env.USER_WALIDATA_PASSWORD || '123456789',
+    keywords: ['Kementerian Pemuda dan Olahraga', 'PEMUDA DAN OLAHRAGA', 'Kemenpora', 'KEMENPORA', 'Pemuda'],
+    produsenData: 'Deputi Bidang Pengembangan Pemuda dan Pemberdayaan Olahraga',
+    waliData: 'Pusat Data dan Sistem Informasi Kemenpora (Pusdatin Kemenpora)',
+    topic: 'Data Terpadu Kepemudaan, Prestasi Olahraga Daerah, dan Indeks Pembangunan Pemuda Nasional'
   }
 } as const;
 
@@ -53,17 +56,19 @@ export function resolveInstansiContext(userEmail?: string): InstansiContext {
   const email = (
     userEmail ||
     process.env.USER_PENGUSUL_USERNAME ||
-    ALLOWED_INSTANSI.KEMENSOS.email
+    ALLOWED_INSTANSI.KEMENDAGRI.email
   ).toLowerCase();
 
-  const isKemensos = email.includes('kemensos') || email.includes('sosial');
+  const isKemenpora = email.includes('kemenpora') || email.includes('pemuda');
 
-  if (isKemensos) {
-    // Pengusul: Kemensos -> Target WAJIB: Kemendagri
+  if (isKemenpora) {
+    // Pengusul: Kemenpora -> Target WAJIB: Kemendagri
     return {
       loginEmail: email,
-      loginInstansiName: ALLOWED_INSTANSI.KEMENSOS.name,
+      loginInstansiName: ALLOWED_INSTANSI.KEMENPORA.name,
+      loginInstansiId: ALLOWED_INSTANSI.KEMENPORA.id,
       targetInstansi: ALLOWED_INSTANSI.KEMENDAGRI.targetName,
+      targetInstansiId: ALLOWED_INSTANSI.KEMENDAGRI.id,
       targetKeywords: [...ALLOWED_INSTANSI.KEMENDAGRI.keywords],
       targetProdusenData: ALLOWED_INSTANSI.KEMENDAGRI.produsenData,
       targetWaliData: ALLOWED_INSTANSI.KEMENDAGRI.waliData,
@@ -72,24 +77,26 @@ export function resolveInstansiContext(userEmail?: string): InstansiContext {
       targetLoginPassword: ALLOWED_INSTANSI.KEMENDAGRI.password
     };
   } else {
-    // Pengusul: Kemendagri -> Target WAJIB: Kemensos
+    // Pengusul: Kemendagri -> Target WAJIB: Kemenpora
     return {
       loginEmail: email,
       loginInstansiName: ALLOWED_INSTANSI.KEMENDAGRI.name,
-      targetInstansi: ALLOWED_INSTANSI.KEMENSOS.targetName,
-      targetKeywords: [...ALLOWED_INSTANSI.KEMENSOS.keywords],
-      targetProdusenData: ALLOWED_INSTANSI.KEMENSOS.produsenData,
-      targetWaliData: ALLOWED_INSTANSI.KEMENSOS.waliData,
-      defaultTopic: ALLOWED_INSTANSI.KEMENSOS.topic,
-      targetLoginEmail: ALLOWED_INSTANSI.KEMENSOS.email,
-      targetLoginPassword: ALLOWED_INSTANSI.KEMENSOS.password
+      loginInstansiId: ALLOWED_INSTANSI.KEMENDAGRI.id,
+      targetInstansi: ALLOWED_INSTANSI.KEMENPORA.targetName,
+      targetInstansiId: ALLOWED_INSTANSI.KEMENPORA.id,
+      targetKeywords: [...ALLOWED_INSTANSI.KEMENPORA.keywords],
+      targetProdusenData: ALLOWED_INSTANSI.KEMENPORA.produsenData,
+      targetWaliData: ALLOWED_INSTANSI.KEMENPORA.waliData,
+      defaultTopic: ALLOWED_INSTANSI.KEMENPORA.topic,
+      targetLoginEmail: ALLOWED_INSTANSI.KEMENPORA.email,
+      targetLoginPassword: ALLOWED_INSTANSI.KEMENPORA.password
     };
   }
 }
 
 /**
  * Memilih instansi target secara KETAT di dropdown SDI.
- * Menjamin tidak pernah memilih instansi lain selain Kemensos dan Kemendagri.
+ * Menjamin selalu memilih instansi target yang sesuai (Kemenpora / Kemendagri).
  */
 export async function selectStrictInstansi(
   page: Page,
@@ -127,7 +134,6 @@ export async function selectStrictInstansi(
   let selectedOptionText = '';
 
   if (isSearchAvailable) {
-    // Coba keyword spesifik
     const searchTerms = [
       instansiCtx.targetInstansi,
       instansiCtx.targetKeywords[0],
@@ -152,12 +158,12 @@ export async function selectStrictInstansi(
             optText.toUpperCase().includes(k.toUpperCase())
           ) || optText.toUpperCase().includes(instansiCtx.targetInstansi.toUpperCase());
 
-        // Validasi negatif: Pastikan bukan instansi lain
         const isForbidden =
+          !optText.toUpperCase().includes('PEMUDA') &&
+          !optText.toUpperCase().includes('OLAHRAGA') &&
+          !optText.toUpperCase().includes('KEMENPORA') &&
           !optText.toUpperCase().includes('DALAM NEGERI') &&
-          !optText.toUpperCase().includes('KEMENDAGRI') &&
-          !optText.toUpperCase().includes('SOSIAL') &&
-          !optText.toUpperCase().includes('KEMENSOS');
+          !optText.toUpperCase().includes('KEMENDAGRI');
 
         if (matchesTarget && !isForbidden) {
           await opt.scrollIntoViewIfNeeded().catch(() => {});
@@ -169,7 +175,6 @@ export async function selectStrictInstansi(
       }
     }
   } else {
-    // Tanpa search input
     const options = page.locator('[role="option"], [id^="button-kebutuhan-form-instansi-item-"]');
     const count = await options.count().catch(() => 0);
     for (let i = 0; i < count; i++) {
@@ -181,10 +186,11 @@ export async function selectStrictInstansi(
       );
 
       const isForbidden =
+        !optText.toUpperCase().includes('PEMUDA') &&
+        !optText.toUpperCase().includes('OLAHRAGA') &&
+        !optText.toUpperCase().includes('KEMENPORA') &&
         !optText.toUpperCase().includes('DALAM NEGERI') &&
-        !optText.toUpperCase().includes('KEMENDAGRI') &&
-        !optText.toUpperCase().includes('SOSIAL') &&
-        !optText.toUpperCase().includes('KEMENSOS');
+        !optText.toUpperCase().includes('KEMENDAGRI');
 
       if (matchesTarget && !isForbidden) {
         await opt.scrollIntoViewIfNeeded().catch(() => {});
@@ -199,7 +205,7 @@ export async function selectStrictInstansi(
   if (!optionFound) {
     throw new Error(
       `[CRITICAL INSTANSI GUARD] Tidak ditemukan opsi untuk "${instansiCtx.targetInstansi}". ` +
-      `Sesuai instruksi: DILARANG menggunakan instansi selain Kemensos dan Kemendagri karena tidak ada akunnya!`
+      `Pastikan opsi "${instansiCtx.targetInstansi}" tersedia di dropdown!`
     );
   }
 
@@ -214,8 +220,7 @@ export async function selectStrictInstansi(
 
   if (!isVerified) {
     throw new Error(
-      `[CRITICAL INSTANSI GUARD] Instansi yang terpasang "${verifiedText}" BUKAN target valid ("${instansiCtx.targetInstansi}"). ` +
-      `Sistem membatalkan form karena instansi selain Kemensos & Kemendagri tidak memiliki akun login!`
+      `[CRITICAL INSTANSI GUARD] Instansi yang terpasang "${verifiedText}" BUKAN target valid ("${instansiCtx.targetInstansi}").`
     );
   }
 

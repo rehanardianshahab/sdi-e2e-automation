@@ -25,8 +25,7 @@ export async function runModuleA(
 ) {
   const loggedInEmail =
     process.env.USER_PENGUSUL_USERNAME ||
-    process.env.USER_WALIDATA_USERNAME ||
-    "exchange@test.kemensos.go.id";
+    "exchange@test.kemendagri.go.id";
   const instansiCtx = resolveInstansiContext(loggedInEmail);
   const safePayload = sanitizePayload(payload, loggedInEmail);
   const kbt = safePayload.kebutuhanData;
@@ -446,7 +445,7 @@ export async function runModuleE(
     .first();
   if (await typeBtn.isVisible()) await typeBtn.click();
 
-  const peranBtn = page.locator("#button-pengajuan-form-peran-0").first();
+  const peranBtn = page.locator("#button-pengajuan-form-peran-1, #button-pengajuan-form-peran-0").first();
   if (await peranBtn.isVisible()) await peranBtn.click();
 
   const sistemInput = page.locator("#input-pengajuan-form-nama-sistem");
@@ -461,16 +460,78 @@ export async function runModuleE(
     );
   }
 
-  const tujuanInput = page.locator("#input-pengajuan-form-tujuan");
+  const layananInput = page.locator("#input-pengajuan-form-layanan-diminta");
+  if (await layananInput.isVisible()) {
+    await fillById(
+      page,
+      logger,
+      mod,
+      "#input-pengajuan-form-layanan-diminta",
+      aks.layananDiminta || "REST API Layanan Interoperabilitas Kependudukan",
+      "Layanan yang Diminta",
+    );
+  }
+
+  const levelBtn = page.locator("#button-pengajuan-form-level-0").first();
+  if (await levelBtn.isVisible()) await levelBtn.click();
+
+  const dsTrigger = page.locator("#button-pengajuan-form-dataset-trigger").first();
+  if (await dsTrigger.isVisible()) {
+    const dsText = await dsTrigger.innerText().catch(() => "");
+    if (dsText.includes("Pilih Dataset") || !dsText.trim()) {
+      await dsTrigger.click();
+      await page.waitForTimeout(500);
+      const firstOpt = page.locator('#option-pengajuan-form-dataset-0, [role="option"]').first();
+      if (await firstOpt.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await firstOpt.click();
+      } else {
+        await page.keyboard.press("Escape");
+      }
+    }
+  }
+
+  const tujuanInput = page.locator("#textarea-pengajuan-form-tujuan, #input-pengajuan-form-tujuan").first();
   if (await tujuanInput.isVisible()) {
     await fillById(
       page,
       logger,
       mod,
-      "#input-pengajuan-form-tujuan",
+      "#textarea-pengajuan-form-tujuan, #input-pengajuan-form-tujuan",
       aks.tujuanPenggunaan,
       "Tujuan Penggunaan",
     );
+  }
+
+  const kewenanganInput = page.locator("#textarea-pengajuan-form-dasar-kewenangan").first();
+  if (await kewenanganInput.isVisible()) {
+    await fillById(
+      page,
+      logger,
+      mod,
+      "#textarea-pengajuan-form-dasar-kewenangan",
+      aks.dasarKewenangan || "Peraturan Presiden Nomor 39 Tahun 2019 tentang Satu Data Indonesia.",
+      "Dasar Kewenangan",
+    );
+  }
+
+  const granBtn = page.locator("#button-pengajuan-form-granularitas-0").first();
+  if (await granBtn.isVisible()) await granBtn.click();
+
+  const dateTrigger = page.locator("#button-pengajuan-form-date-range-trigger").first();
+  if (await dateTrigger.isVisible()) {
+    await dateTrigger.click();
+    await page.waitForTimeout(600);
+    const startDay = page.locator('[role="dialog"] button:has-text("10"):not([disabled])').first();
+    const endDay = page.locator('[role="dialog"] button:has-text("25"):not([disabled])').first();
+    if (await startDay.isVisible({ timeout: 2000 }).catch(() => false)) await startDay.click();
+    if (await endDay.isVisible({ timeout: 2000 }).catch(() => false)) await endDay.click();
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+  }
+
+  const frekInput = page.locator("#input-pengajuan-form-frekuensi").first();
+  if (await frekInput.isVisible()) {
+    await frekInput.fill("1000 request/hari");
   }
 
   // Upload File Surat Permohonan (.pdf)
@@ -487,38 +548,37 @@ export async function runModuleE(
   }
 
   const uploadInput = page
-    .locator('#input-pengajuan-form-file-upload, input[type="file"]')
+    .locator('#dokumen-pendukung-file-input, #input-pengajuan-form-file-upload, input[type="file"]')
     .first();
-  if (await uploadInput.isVisible()) {
-    await uploadInput.setInputFiles(fixturePdfPath);
-    logger.markSuccess(
-      logger.logProgress(
-        mod,
-        "UPLOAD_FILE",
-        "#input-pengajuan-form-file-upload",
-        "Upload Dokumen Surat Permohonan (PDF)",
-      ),
-      "File PDF berhasil diunggah",
-    );
-  }
+  await uploadInput.setInputFiles(fixturePdfPath);
+  await page.locator("#button-pengajuan-form-delete-doc").waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
+  logger.markSuccess(
+    logger.logProgress(
+      mod,
+      "UPLOAD_FILE",
+      "#dokumen-pendukung-file-input",
+      "Upload Dokumen Surat Permohonan (PDF)",
+    ),
+    "File PDF berhasil diunggah ke MinIO Storage",
+  );
 
   const submitAksesBtn = page
     .locator(
-      '#button-pengajuan-form-submit, button:has-text("Kirim Pengajuan")',
+      '#button-pengajuan-form-submit, button:has-text("Kirim Permohonan")',
     )
     .first();
   if (await submitAksesBtn.isVisible()) {
     await submitAksesBtn.scrollIntoViewIfNeeded().catch(() => {});
-    await submitAksesBtn.click({ force: true });
+    await submitAksesBtn.click();
     logger.markSuccess(
       logger.logProgress(
         mod,
         "CLICK_BUTTON",
         "#button-pengajuan-form-submit",
-        "Kirim Pengajuan Akses Data",
+        "Kirim Permohonan & Generate BAST",
       ),
       "Permohonan Akses Data berhasil diajukan (LID Selesai)",
     );
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(2500);
   }
 }

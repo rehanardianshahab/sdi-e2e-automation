@@ -21,11 +21,11 @@ async function inspectRegistrasiData() {
 
     const rows = await page.locator('tbody tr').evaluateAll((trs) =>
       trs.map((tr) => ({
-        text: tr.innerText.replace(/\s+/g, ' ').trim(),
+        text: (tr as HTMLElement).innerText.replace(/\s+/g, ' ').trim(),
         buttons: Array.from(tr.querySelectorAll('button')).map((b) => ({
           id: b.id,
           title: b.title || b.getAttribute('aria-label'),
-          text: b.innerText.trim()
+          text: (b as HTMLElement).innerText.trim()
         }))
       }))
     );
